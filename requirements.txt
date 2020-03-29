@@ -1,0 +1,6 @@
+git+https://github.com/seasidesparrow/ADSJournalHoldings.git
+adsputils==1.0.12
+namedentities==1.9.4
+SQLAlchemy==1.1.6
+alembic==1.0.0
+psycopg2-binary==2.7.5
