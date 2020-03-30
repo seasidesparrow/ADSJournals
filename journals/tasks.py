@@ -1,12 +1,8 @@
 from __future__ import absolute_import, unicode_literals
 from kombu import Queue
-import os
-import config
-import sys
 
 from journals import app as app_module
 from journals.models import *
-
 import journals.utils as utils
 import json
 
@@ -16,7 +12,7 @@ class DBCommit_Exception(Exception):
     """Non-recoverable Error with making database commits."""
     pass
 
-app = app_module.ADSJournalsCelery('load-journaldb',proj_home=os.path.realpath(os.path.join(os.path.dirname(__file__),'../')))
+app = app_module.ADSJournalsCelery('journals')
 
 app.conf.CELERY_QUEUES = (
     Queue('load-master',app.exchange,routing_key='load-master'),
