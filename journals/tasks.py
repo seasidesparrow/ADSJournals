@@ -6,7 +6,7 @@ from journals.models import *
 import journals.utils as utils
 import json
 
-import holdings.holdings as holdings
+import journals.holdings as holdings
 
 class DBCommit_Exception(Exception):
     """Non-recoverable Error with making database commits."""
