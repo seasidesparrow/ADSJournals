@@ -12,4 +12,7 @@ from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
 
 class ADSJournalsCelery(ADSCelery):
-    pass
+
+    def __init__(self):
+        Session = sessionmaker()
+        self.session = Session()
