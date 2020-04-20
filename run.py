@@ -1,20 +1,16 @@
-from time import time
 import argparse
-import os
 import config
-import json
-import logging
 from journals import tasks
 from journals import utils
-from journals.models import *
-from adsputils import setup_logging, get_date
+from adsputils import setup_logging
 
 logger = setup_logging('run.py')
+
 
 def get_arguments():
     logging.captureWarnings(True)
 
-    parser=argparse.ArgumentParser(description='Command line options.')
+    parser = argparse.ArgumentParser(description='Command line options.')
 
     parser.add_argument('-lm',
                         '--load-master',
@@ -40,83 +36,84 @@ def get_arguments():
                         action='store_true',
                         help='Load spreadsheet complete_ast')
 
-    args=parser.parse_args()
+    args = parser.parse_args()
     return args
 
 
 def load_master_table():
     bibstems = utils.read_bibstems_list()
     recs = []
-    for k,v in bibstems.items():
+    for k, v in bibstems.items():
         bibstem = k
         pubtype = v['type']
         journal_name = v['pubname']
-        recs.append((bibstem,pubtype,journal_name))
+        recs.append((bibstem, pubtype, journal_name))
     if len(recs) > 0:
-        logger.info('Inserting {0} bibstems into Master'.format(len(recs)))
+        logger.debug("Inserting {0} bibstems into Master".format(len(recs)))
         tasks.task_db_bibstems_to_master(recs)
     else:
-        logger.warn('No bibstems to insert')
+        logger.warn("No bibstems to insert")
     return
 
 
 def load_abbreviations(masterdict):
     abbrevs = utils.read_abbreviations_list()
     recs = []
-    for k,v in abbrevs.items():
+    for k, v in abbrevs.items():
         try:
             if k in masterdict:
+                logger.debug("Got mid for bibstem {0}".format(k))
                 mid = masterdict[k]
                 for a in v:
-                    recs.append((mid,a))
+                    recs.append((mid, a))
             else:
-                logger.info("No mid for bibstem {0}".format(k))
-        except:
-            logger.warn("Unknown problem for bibstem {0}".format(k))
+                logger.debug("No mid for bibstem {0}".format(k))
+        except Exception, err:
+            logger.warn("Error with bibstem {0}".format(k))
+            logger.warn("Error: {0}".format(err))
     if len(recs) > 0:
-        logger.info('Inserting {0} abbreviations into Abbreviations'.format(len(recs)))
-        tasks.task_db_load_abbrevs(recs)
+        logger.debug("Inserting {0} abbreviations into Abbreviations".format(len(recs)))
+        try:
+            tasks.task_db_load_abbrevs(recs)
+        except Exception, err:
+            logger.error("Could not load abbreviations: {0}".format(err))
     else:
-        print "No bibcodes.... problem?"
+        logger.warn("There are no abbreviations to load.")
     return
+
 
 def load_completeness(masterdict):
     pub_dict = utils.read_complete_csvs()
     recsi = []
     recsx = []
-    for k,v in pub_dict.items():
+    for k, v in pub_dict.items():
         try:
             if k in masterdict:
+                logger.debug("Got mid for bibstem {0}".format(k))
                 mid = masterdict[k]
                 a = v['issn']
                 b = v['xref']
                 if a != '':
-                    recsi.append((mid,a))
+                    recsi.append((mid, a))
                 if b != '':
-                    recsx.append((mid,b))
-                
+                    recsx.append((mid, b))
             else:
-                logger.info("No mid for bibstem {0}".format(k))
-        except:
-            logger.warn("Unknown problem for bibstem {0}".format(k))
+                logger.debug("No mid for bibstem {0}".format(k))
+        except Exception, err:
+            logger.warn("Error with bibstem {0}".format(k))
+            logger.warn("Error: {0}".format(err))
     if len(recsi) > 0:
         tasks.task_db_load_issn(recsi)
-
     if len(recsx) > 0:
         tasks.task_db_load_xref(recsx)
-
     return
 
 
 def calc_holdings(masterdict, json_file):
-
-    # print "lol, masterdict",masterdict
-
     try:
         tasks.task_db_load_holdings(masterdict, json_file)
     except Exception, err:
-        print("Failed to load holdings:",err)
-
+        logger.error("Failed to load holdings: {0}".format(err))
     return
 
 
@@ -130,28 +127,27 @@ def main():
     # if this fails, you're dead in the water.
     if args.load_master:
         load_master_table()
-    
-    # none of the other loaders will work unless you have data in 
+
+    # none of the other loaders will work unless you have data in
     # journals.master, so try to load it
     try:
         masterdict = tasks.task_db_get_bibstem_masterid()
-        print "masterdict has %s records"%len(masterdict)
-    except Exception as e:
-        logger.error("Error reading master table bibstem-masterid mapping: {0}".format(e))
+        logger.info("masterdict has {0} records".format(len(masterdict)))
+    except Exception, err:
+        logger.error("Error reading master table bibstem-masterid mapping: {0}".format(err))
     else:
-        print "In Run:",type(masterdict)
-        # if args.load_abbrevs == True:
         # load bibstem-journal name abbreviation pairs
         if args.load_abbrevs:
             load_abbreviations(masterdict)
 
         if args.load_ca:
-            # astro data
+            # astro journal data
             load_completeness(masterdict)
 
         if args.calc_holdings:
             # holdings: be aware this is a big Solr query
             calc_holdings(masterdict, args.calc_holdings)
+
 
 if __name__ == '__main__':
     main()
