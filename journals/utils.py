@@ -103,6 +103,9 @@ def read_complete_csvs():
                                              u'online': online,
                                              u'url': url,
                                              u'notes': notes}
+        except Exception, err:
+            logger.warn('Cant load collection {0}:'.format(coll))
+        
     return data
 
 
