@@ -10,7 +10,6 @@ class Holdings():
         try:
             config.API_KEY
         except NameError, err:
-            print(err)
             config.API_KEY = 'dummy_token'
 
         token = 'Bearer ' + config.API_KEY
@@ -25,7 +24,8 @@ class Holdings():
             bibstem = requests.utils.quote(bibstem)
         else:
             # bibstem must be a string -- if it's not, just return
-            print("Holdings.fetch: Bad type for bibstem: %s" % type(bibstem))
+            logger.warn("Holdings.fetch: Bad type for bibstem: %s" %
+                        type(bibstem))
             return []
         # getyear can be an integer (1994) or str ('1990-1994')
         if isinstance(getyear, str):
@@ -51,27 +51,26 @@ class Holdings():
                 output_array = output_array + docs
                 nstart = nstart + self.nmax
         except Exception, err:
-            print("Error in Holdings.fetch: %s" % err)
+            logger.warn("Error in Holdings.fetch: %s" % err)
             return []
         else:
             return output_array
 
-    def load_json(self,infile):
+    def load_json(self, infile):
         output_array = []
-        if not os.path.exists(infile):
-            print "file does not exist:",infile
-        else:
-            with open(infile,'rU') as fhold:
+        if os.path.exists(infile):
+            with open(infile, 'rU') as fhold:
                 json_data = json.load(fhold)
                 if json_data['responseHeader']['status'] == 0:
                     output_array = json_data['response']['docs']
                 else:
-                    print "problem loading json:",json_data['responseHeader']
+                    logger.warn("problem loading json: %s " %
+                                json_data['responseHeader'])
+        else:
+            logger.warn("Json does not exist: %s" % infile)
         return output_array
-        
 
     def process_output(self, output_array):
-
         try:
             holdings_list = dict()
             for paper in output_array:
@@ -83,7 +82,6 @@ class Holdings():
                     try:
                         eso = self.convert_esources_to_int(paper['esources'])
                     except Exception, err:
-                        # print "Error:", err
                         eso = 0
                     outdict = {'page': pg, 'year': yr, 'esources': eso}
                     if bs in holdings_list:
@@ -91,11 +89,9 @@ class Holdings():
                     else:
                         holdings_list[bs] = [outdict]
                 except Exception, err:
-                    # print("Paper: %s" % paper)
-                    # print("Error in Holdings.process_output: %s" % err)
                     pass
         except Exception, err:
-            print("Error in Holdings.process_output: %s" % err)
+            logger.warn("Error in Holdings.process_output: %s" % err)
             return {}
         else:
             return holdings_list
@@ -111,6 +107,5 @@ class Holdings():
             bin_int_string = '0b' + bin_int_string
             esources_out = int(bin_int_string, 2)
         except Exception, err:
-            print 'Error:', err
             esources_out = 0
         return esources_out
