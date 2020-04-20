@@ -59,7 +59,7 @@ class Identifiers(Base):
     id_type = Column(String)
     id_value = Column(String)
     updated = Column(UTCDateTime, onupdate=get_date)
-    created = Column(UTCDateTime, default=get_time)
+    created = Column(UTCDateTime, default=get_date)
     id_combo = UniqueConstraint('id_type','id_value', name = 'identkey')
     
 
@@ -74,7 +74,7 @@ class Abbreviations(Base):
     masterid = Column(Integer, ForeignKey('master.masterid'), primary_key=True, nullable=False)
     abbreviation = Column(String)
     updated = Column(UTCDateTime, onupdate=get_date)
-    created = Column(UTCDateTime, default=get_time)
+    created = Column(UTCDateTime, default=get_date)
 
     def __repr__(self):
         return "Abbreviations(abbrevid='{self.abbrevid}')".format(self=self)
@@ -92,7 +92,7 @@ class History(Base):
     orgid = Column(String)
     notes = Column(String)
     updated = Column(UTCDateTime, onupdate=get_date)
-    created = Column(UTCDateTime, default=get_time)
+    created = Column(UTCDateTime, default=get_date)
 
     def __repr__(self):
         return "History(historyid='{self.historyid}')".format(self=self)
@@ -106,7 +106,7 @@ class Holdings(Base):
     volumes_list = Column(JSONB, server_default="'{}'")
     complete = Column(Boolean, default=False)
     updated = Column(UTCDateTime, onupdate=get_date)
-    created = Column(UTCDateTime, default=get_time)
+    created = Column(UTCDateTime, default=get_date)
 
     def __repr__(self):
         return "Holdings(holdingsid='{self.holdingsid}')".format(self=self)
@@ -122,7 +122,7 @@ class Publisher(Base):
     pubcontact = Column(JSONB, server_default="'{}'")
     puburl = Column(String)
     updated = Column(UTCDateTime, onupdate=get_date)
-    created = Column(UTCDateTime, default=get_time)
+    created = Column(UTCDateTime, default=get_date)
 
     def __repr__(self):
         return "Publisher(publisherid='{self.publisherid}')".format(self=self)
@@ -139,7 +139,7 @@ class Statistics(Base):
     statsid = Column(Integer, primary_key=True, autoincrement=True, unique=True, nullable=False)
     statistics = Column(JSONB, server_default="'{}'")
     updated = Column(UTCDateTime, onupdate=get_date)
-    created = Column(UTCDateTime, default=get_time)
+    created = Column(UTCDateTime, default=get_date)
 
     def __repr(self):
         return "Statistics(statsid='{self.statsid}')".format(self=self)
@@ -156,7 +156,7 @@ class RasterControl(Base):
     embargo_months = Column(Integer)
     volume_properties = Column(JSONB, server_default="'{}'")
     updated = Column(UTCDateTime, onupdate=get_date)
-    created = Column(UTCDateTime, default=get_time)
+    created = Column(UTCDateTime, default=get_date)
 
     def __repr(self):
         return "RasterControl(rasterid='{self.rasterid}')".format(self=self)
