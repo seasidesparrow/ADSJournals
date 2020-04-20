@@ -27,10 +27,12 @@ def read_bibstems_list():
                 (bibstem, bstype, bspubname) = l.rstrip().split('\t')
                 bibstem = bibstem.rstrip('.').lstrip('.')
                 if bibstem in data:
-                    logger.warn("Duplicate in bibstems list: {0}".format(bibstem))
+                    # logger.warn("Duplicate in bibstems list: {0}".format(bibstem))
+                    pass
                 data[bibstem] = {'type': bstype, 'pubname': bspubname}
     except Exception, err:
-        logger.warn("Error reading bibstems from file: {0}".format(err))
+        # logger.warn("Error reading bibstems from file: {0}".format(err))
+        pass
     return data
 
 
@@ -47,7 +49,8 @@ def read_abbreviations_list():
                 if abbrev not in datadict[bibstem_abbrev]:
                     datadict[bibstem_abbrev].append(abbrev)
                 else:
-                    logger.warn("Duplicate abbreviation: {0}".format(abbrev))
+                    # logger.warn("Duplicate abbreviation: {0}".format(abbrev))
+                    pass
             else:
                 datadict[bibstem_abbrev] = [abbrev]
     return datadict
@@ -62,7 +65,8 @@ def read_canonical_list():
                 (bibcode, a, b, c) = l.rstrip().split('\t')
                 bibc.append(bibcode)
     except Exception, err:
-        logger.error("Could not read list of canonical bibs: {0}".format(err))
+        # logger.error("Could not read list of canonical bibs: {0}".format(err))
+        pass
     return bibc
 
 
@@ -80,11 +84,13 @@ def read_complete_csvs():
                          endvol, complete, complete_origin, publisher, scanned,
                          online, url, notes) = l.strip().split('|')
                     except Exception, err:
-                        logger.warn("Unparseable csv: {0}".format(l.strip()))   
+                        # logger.warn("Unparseable csv: {0}".format(l.strip()))
+                        pass
                     else:
                         if bibstem in data:
-                            logger.info("skipping duplicate bibstem: %s" %
-                                        bibstem)
+                            # logger.info("skipping duplicate bibstem: %s" %
+                            #             bibstem)
+                            pass
                         else:
                             for a in [complete, scanned, online]:
                                 if (a != '' and (a[0] == 'Y' or a[0] == 'y')):
@@ -104,7 +110,8 @@ def read_complete_csvs():
                                              u'url': url,
                                              u'notes': notes}
         except Exception, err:
-            logger.warn('Cant load collection {0}:'.format(coll))
+            # logger.warn('Cant load collection {0}:'.format(coll))
+            pass
         
     return data
 
@@ -124,5 +131,6 @@ def parse_bibcodes(bibcode):
             parsed_bib = {"bibcode": bibcode, "year": year, "bibstem": stem, "volume": volm,
                           "qualifier": qual, "page": page, "initial": auth}
         except Exception, err:
-            logger.warn("Nonstandard bibcode: {0}".format(bibcode))
+            # logger.warn("Nonstandard bibcode: {0}".format(bibcode))
+            pass
     return parsed_bib
