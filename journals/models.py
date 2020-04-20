@@ -1,13 +1,8 @@
+from adsputils import get_date, UTCDateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import (Table, Column, Integer, Numeric, String, TIMESTAMP,
                         ForeignKey, Boolean, Float, UniqueConstraint)
-
-from sqlalchemy.orm import relationship, backref
-from sqlalchemy.dialects.postgresql import JSONB,ENUM
-
-from sqlalchemy import types
-
-from adsputils import get_date, UTCDateTime
+from sqlalchemy.dialects.postgresql import JSONB, ENUM
 
 Base = declarative_base()
 
@@ -15,10 +10,9 @@ Base = declarative_base()
 class JournalsMaster(Base):
     __tablename__ = 'master'
 
-
-    pub_type = ENUM('Journal','Conf. Proc.','Monograph','Book','Software', \
-                    'Other', name='pub_type')
-    ref_status = ENUM('yes','no','partial','na', name='ref_status')
+    pub_type = ENUM('Journal', 'Conf. Proc.', 'Monograph', 'Book',
+                    'Software', 'Other', name='pub_type')
+    ref_status = ENUM('yes', 'no', 'partial', 'na', name='ref_status')
 
     masterid = Column(Integer, primary_key=True, unique=True)
     bibstem = Column(String, unique=True, nullable=False)
@@ -39,7 +33,8 @@ class JournalsMaster(Base):
 class JournalsNames(Base):
     __tablename__ = 'names'
 
-    masterid = Column(Integer, ForeignKey('master.masterid'), primary_key=True, nullable=False)
+    masterid = Column(Integer, ForeignKey('master.masterid'),
+                      primary_key=True, nullable=False)
     name_english_translated = Column(String)
     title_language = Column(String)
     name_native_language = Column(String)
@@ -54,14 +49,15 @@ class JournalsNames(Base):
 class Identifiers(Base):
     __tablename__ = 'idents'
 
-    identid = Column(Integer, primary_key=True, autoincrement=True, unique=True, nullable=False)
-    masterid = Column(Integer, ForeignKey('master.masterid'), primary_key=True, nullable=False)
+    identid = Column(Integer, primary_key=True, autoincrement=True,
+                     unique=True, nullable=False)
+    masterid = Column(Integer, ForeignKey('master.masterid'),
+                      primary_key=True, nullable=False)
     id_type = Column(String)
     id_value = Column(String)
     updated = Column(UTCDateTime, onupdate=get_date)
     created = Column(UTCDateTime, default=get_date)
-    id_combo = UniqueConstraint('id_type','id_value', name = 'identkey')
-    
+    id_combo = UniqueConstraint('id_type', 'id_value', name='identkey')
 
     def __repr__(self):
         return "Identifiers(identid='{self.identid}')".format(self=self)
@@ -70,8 +66,10 @@ class Identifiers(Base):
 class Abbreviations(Base):
     __tablename__ = 'abbrevs'
 
-    abbrevid = Column(Integer, primary_key=True, autoincrement=True, unique=True, nullable=False)
-    masterid = Column(Integer, ForeignKey('master.masterid'), primary_key=True, nullable=False)
+    abbrevid = Column(Integer, primary_key=True, autoincrement=True,
+                      unique=True, nullable=False)
+    masterid = Column(Integer, ForeignKey('master.masterid'),
+                      primary_key=True, nullable=False)
     abbreviation = Column(String)
     updated = Column(UTCDateTime, onupdate=get_date)
     created = Column(UTCDateTime, default=get_date)
@@ -83,8 +81,10 @@ class Abbreviations(Base):
 class History(Base):
     __tablename__ = 'history'
 
-    historyid = Column(Integer, primary_key=True, autoincrement=True, unique=True, nullable=False)
-    masterid = Column(Integer, ForeignKey('master.masterid'), primary_key=True, nullable=False)
+    historyid = Column(Integer, primary_key=True, autoincrement=True,
+                       unique=True, nullable=False)
+    masterid = Column(Integer, ForeignKey('master.masterid'),
+                      primary_key=True, nullable=False)
     year_start = Column(Integer)
     year_end = Column(Integer)
     predecessor_id = Column(Integer)
@@ -101,8 +101,10 @@ class History(Base):
 class Holdings(Base):
     __tablename__ = 'holdings'
 
-    holdingsid = Column(Integer, primary_key=True, autoincrement=True, unique=True, nullable=False)
-    masterid = Column(Integer, ForeignKey('master.masterid'), primary_key=True, nullable=False)
+    holdingsid = Column(Integer, primary_key=True, autoincrement=True,
+                        unique=True, nullable=False)
+    masterid = Column(Integer, ForeignKey('master.masterid'),
+                      primary_key=True, nullable=False)
     volumes_list = Column(JSONB, server_default="'{}'")
     complete = Column(Boolean, default=False)
     updated = Column(UTCDateTime, onupdate=get_date)
@@ -115,8 +117,10 @@ class Holdings(Base):
 class Publisher(Base):
     __tablename__ = 'publisher'
 
-    publisherid = Column(Integer, primary_key=True, autoincrement=True, unique=True, nullable=False)
-    masterid = Column(Integer, ForeignKey('master.masterid'), primary_key=True, nullable=False)
+    publisherid = Column(Integer, primary_key=True, autoincrement=True,
+                         unique=True, nullable=False)
+    masterid = Column(Integer, ForeignKey('master.masterid'),
+                      primary_key=True, nullable=False)
     pubname = Column(String)
     pubaddress = Column(String)
     pubcontact = Column(JSONB, server_default="'{}'")
@@ -135,8 +139,10 @@ class Statistics(Base):
 # information separate from our Holdings table (e.g. journal reads, ADS pdf
 # reads, etc)
 
-    historyid = Column(Integer, ForeignKey('history.historyid'), primary_key=True, nullable=False)
-    statsid = Column(Integer, primary_key=True, autoincrement=True, unique=True, nullable=False)
+    historyid = Column(Integer, ForeignKey('history.historyid'),
+                       primary_key=True, nullable=False)
+    statsid = Column(Integer, primary_key=True, autoincrement=True,
+                     unique=True, nullable=False)
     statistics = Column(JSONB, server_default="'{}'")
     updated = Column(UTCDateTime, onupdate=get_date)
     created = Column(UTCDateTime, default=get_date)
@@ -148,11 +154,13 @@ class Statistics(Base):
 class RasterControl(Base):
     __tablename__ = 'rastercontrol'
 
-# placeholder for the concept of a table with information controlling 
+# placeholder for the concept of a table with information controlling
 # rasterizing information (e.g. the information in .../articles/config/ABC.xml)
 
-    historyid = Column(Integer, ForeignKey('history.historyid'), primary_key=True, nullable=False)
-    rasterid = Column(Integer, primary_key=True, autoincrement=True, unique=True, nullable=False)
+    historyid = Column(Integer, ForeignKey('history.historyid'),
+                       primary_key=True, nullable=False)
+    rasterid = Column(Integer, primary_key=True, autoincrement=True,
+                      unique=True, nullable=False)
     embargo_months = Column(Integer)
     volume_properties = Column(JSONB, server_default="'{}'")
     updated = Column(UTCDateTime, onupdate=get_date)
