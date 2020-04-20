@@ -6,8 +6,8 @@ from sqlalchemy.orm import relationship, backref
 from sqlalchemy.dialects.postgresql import JSONB,ENUM
 
 from sqlalchemy import types
-from dateutil.tz import tzutc
-from datetime import datetime
+
+from adsputils import get_date, UTCDateTime
 
 Base = declarative_base()
 
@@ -26,8 +26,8 @@ class JournalsMaster(Base):
     primary_language = Column(String)
     multilingual = Column(Boolean)
     defunct = Column(Boolean, nullable=False, default=False)
-    updated = Column(TIMESTAMP, onupdate=datetime.now)
-    created = Column(TIMESTAMP, default=datetime.now())
+    updated = Column(UTCDateTime, onupdate=get_date)
+    created = Column(UTCDateTime, default=get_date)
 
     pubtype = Column(pub_type, nullable=False)
     refereed = Column(ref_status, nullable=False)
@@ -44,8 +44,8 @@ class JournalsNames(Base):
     title_language = Column(String)
     name_native_language = Column(String)
     name_normalized = Column(String)
-    updated = Column(TIMESTAMP, onupdate=datetime.now)
-    created = Column(TIMESTAMP, default=datetime.now())
+    updated = Column(UTCDateTime, onupdate=get_date)
+    created = Column(UTCDateTime, default=get_date)
 
     def __repr__(self):
         return "JournalsNames(masterid='{self.masterid}')".format(self=self)
@@ -58,8 +58,8 @@ class Identifiers(Base):
     masterid = Column(Integer, ForeignKey('master.masterid'), primary_key=True, nullable=False)
     id_type = Column(String)
     id_value = Column(String)
-    updated = Column(TIMESTAMP, onupdate=datetime.now)
-    created = Column(TIMESTAMP, default=datetime.now())
+    updated = Column(UTCDateTime, onupdate=get_date)
+    created = Column(UTCDateTime, default=get_time)
     id_combo = UniqueConstraint('id_type','id_value', name = 'identkey')
     
 
@@ -73,8 +73,8 @@ class Abbreviations(Base):
     abbrevid = Column(Integer, primary_key=True, autoincrement=True, unique=True, nullable=False)
     masterid = Column(Integer, ForeignKey('master.masterid'), primary_key=True, nullable=False)
     abbreviation = Column(String)
-    updated = Column(TIMESTAMP, onupdate=datetime.now)
-    created = Column(TIMESTAMP, default=datetime.now())
+    updated = Column(UTCDateTime, onupdate=get_date)
+    created = Column(UTCDateTime, default=get_time)
 
     def __repr__(self):
         return "Abbreviations(abbrevid='{self.abbrevid}')".format(self=self)
@@ -91,8 +91,8 @@ class History(Base):
     successor_id = Column(Integer)
     orgid = Column(String)
     notes = Column(String)
-    updated = Column(TIMESTAMP, onupdate=datetime.now)
-    created = Column(TIMESTAMP, default=datetime.now())
+    updated = Column(UTCDateTime, onupdate=get_date)
+    created = Column(UTCDateTime, default=get_time)
 
     def __repr__(self):
         return "History(historyid='{self.historyid}')".format(self=self)
@@ -105,8 +105,8 @@ class Holdings(Base):
     masterid = Column(Integer, ForeignKey('master.masterid'), primary_key=True, nullable=False)
     volumes_list = Column(JSONB, server_default="'{}'")
     complete = Column(Boolean, default=False)
-    updated = Column(TIMESTAMP, onupdate=datetime.now)
-    created = Column(TIMESTAMP, default=datetime.now())
+    updated = Column(UTCDateTime, onupdate=get_date)
+    created = Column(UTCDateTime, default=get_time)
 
     def __repr__(self):
         return "Holdings(holdingsid='{self.holdingsid}')".format(self=self)
@@ -121,8 +121,8 @@ class Publisher(Base):
     pubaddress = Column(String)
     pubcontact = Column(JSONB, server_default="'{}'")
     puburl = Column(String)
-    updated = Column(TIMESTAMP, onupdate=datetime.now)
-    created = Column(TIMESTAMP, default=datetime.now())
+    updated = Column(UTCDateTime, onupdate=get_date)
+    created = Column(UTCDateTime, default=get_time)
 
     def __repr__(self):
         return "Publisher(publisherid='{self.publisherid}')".format(self=self)
@@ -138,8 +138,8 @@ class Statistics(Base):
     historyid = Column(Integer, ForeignKey('history.historyid'), primary_key=True, nullable=False)
     statsid = Column(Integer, primary_key=True, autoincrement=True, unique=True, nullable=False)
     statistics = Column(JSONB, server_default="'{}'")
-    updated = Column(TIMESTAMP, onupdate=datetime.now)
-    created = Column(TIMESTAMP, default=datetime.now())
+    updated = Column(UTCDateTime, onupdate=get_date)
+    created = Column(UTCDateTime, default=get_time)
 
     def __repr(self):
         return "Statistics(statsid='{self.statsid}')".format(self=self)
@@ -155,8 +155,8 @@ class RasterControl(Base):
     rasterid = Column(Integer, primary_key=True, autoincrement=True, unique=True, nullable=False)
     embargo_months = Column(Integer)
     volume_properties = Column(JSONB, server_default="'{}'")
-    updated = Column(TIMESTAMP, onupdate=datetime.now)
-    created = Column(TIMESTAMP, default=datetime.now())
+    updated = Column(UTCDateTime, onupdate=get_date)
+    created = Column(UTCDateTime, default=get_time)
 
     def __repr(self):
         return "RasterControl(rasterid='{self.rasterid}')".format(self=self)
