@@ -25,29 +25,29 @@ app.conf.CELERY_QUEUES = (
 )
 logger = app.logger
 
-session = app.session_scope()
 
 @app.task(queue='load-master')
 def task_db_bibstems_to_master(recs):
     pubtypes = {'C':'Conf. Proc.', 'J':'Journal', 'R':'Journal'}
     reftypes = {'C':'na','J':'no','R':'yes'}
-    if len(recs) > 0:
-        for r in recs:
-            if r[1] in pubtypes:
-                ptype = pubtypes[r[1]]
-            else:
-                ptype = 'Other'
-            if r[1] in reftypes:
-                rtype = reftypes[r[1]]
-            else:
-                rtype = 'na'
-            
-            session.add(JournalsMaster(bibstem=r[0],journal_name=r[2],pubtype=ptype,refereed=rtype,defunct=False))
-        try:
-            session.commit()
-        except Exception, err:
-            logger.error("Problem with database commit: %s" % err)
-            raise DBCommit_Exception("Could not commit to db, stopping now.")
+    with app.session_scope() as session:
+        if len(recs) > 0:
+            for r in recs:
+                if r[1] in pubtypes:
+                    ptype = pubtypes[r[1]]
+                else:
+                    ptype = 'Other'
+                if r[1] in reftypes:
+                    rtype = reftypes[r[1]]
+                else:
+                    rtype = 'na'
+                
+                session.add(JournalsMaster(bibstem=r[0],journal_name=r[2],pubtype=ptype,refereed=rtype,defunct=False))
+            try:
+                session.commit()
+            except Exception, err:
+                logger.error("Problem with database commit: %s" % err)
+                raise DBCommit_Exception("Could not commit to db, stopping now.")
 
 
 @app.task(queue='load-abbrev')
