@@ -13,6 +13,7 @@ class DBCommit_Exception(Exception):
     pass
 
 app = app_module.ADSJournalsCelery('journals')
+logger = app.logger
 
 app.conf.CELERY_QUEUES = (
     Queue('load-master',app.exchange,routing_key='load-master'),
@@ -24,6 +25,7 @@ app.conf.CELERY_QUEUES = (
 )
 logger = app.logger
 
+session = app.session_scope()
 
 @app.task(queue='load-master')
 def task_db_bibstems_to_master(recs):
