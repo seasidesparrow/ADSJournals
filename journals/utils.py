@@ -1,6 +1,13 @@
 import config
 from namedentities import named_entities, unicode_entities
 
+class ReadBibstemException(Exception):
+    pass
+
+
+class ReadCanonicalException(Exception):
+    pass
+
 
 def normalize(instring):
     # input from whatever, output to unicode
@@ -31,8 +38,7 @@ def read_bibstems_list():
                     pass
                 data[bibstem] = {'type': bstype, 'pubname': bspubname}
     except Exception, err:
-        # logger.warn("Error reading bibstems from file: {0}".format(err))
-        pass
+        raise ReadBibstemException(err)
     return data
 
 
@@ -65,8 +71,7 @@ def read_canonical_list():
                 (bibcode, a, b, c) = l.rstrip().split('\t')
                 bibc.append(bibcode)
     except Exception, err:
-        # logger.error("Could not read list of canonical bibs: {0}".format(err))
-        pass
+        raise ReadCanonicalException(err)
     return bibc
 
 
