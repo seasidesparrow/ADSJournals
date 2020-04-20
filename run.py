@@ -8,7 +8,6 @@ logger = setup_logging('run.py')
 
 
 def get_arguments():
-    logging.captureWarnings(True)
 
     parser = argparse.ArgumentParser(description='Command line options.')
 
