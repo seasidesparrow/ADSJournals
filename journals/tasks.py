@@ -20,16 +20,12 @@ app = app_module.ADSJournalsCelery('journals')
 logger = app.logger
 
 app.conf.CELERY_QUEUES = (
-    Queue('load-master', app.exchange, routing_key='load-master'),
-    Queue('load-abbrev', app.exchange, routing_key='load-abbrev'),
-    Queue('load-issn', app.exchange, routing_key='load-issn'),
-    Queue('load-xref', app.exchange, routing_key='load-xref'),
-    Queue('load-holdings', app.exchange, routing_key='load-holdings'),
-    Queue('get-masterid', app.exchange, routing_key='get-masterid')
+    Queue('load-datafiles', app.exchange, routing_key='load-datafiles'),
+    Queue('load-holdings', app.exchange, routing_key='load-holdings')
 )
 
 
-@app.task(queue='load-master')
+@app.task(queue='load-datafiles')
 def task_db_bibstems_to_master(recs):
     pubtypes = {'C': 'Conf. Proc.', 'J': 'Journal', 'R': 'Journal'}
     reftypes = {'C': 'na', 'J': 'no', 'R': 'yes'}
@@ -52,7 +48,7 @@ def task_db_bibstems_to_master(recs):
                 raise DBCommit_Exception("Could not commit to db, stopping now.")
 
 
-@app.task(queue='load-abbrev')
+@app.task(queue='load-datafiles')
 def task_db_load_abbrevs(recs):
     with app.session_scope() as session:
         if len(recs) > 0:
@@ -66,7 +62,7 @@ def task_db_load_abbrevs(recs):
             logger.info("There were no abbreviations to load!")
 
 
-@app.task(queue='load-issn')
+@app.task(queue='load-datafiles')
 def task_db_load_issn(recs):
     with app.session_scope() as session:
         if len(recs) > 0:
@@ -82,7 +78,7 @@ def task_db_load_issn(recs):
             logger.info("There were no ISSNs to load!")
 
 
-@app.task(queue='load-xref')
+@app.task(queue='load-datafiles')
 def task_db_load_xref(recs):
     with app.session_scope() as session:
         if len(recs) > 0:
@@ -98,7 +94,7 @@ def task_db_load_xref(recs):
             logger.info("There were no XREF IDs to load!")
 
 
-@app.task(queue='get-masterid')
+@app.task(queue='load-datafiles')
 def task_db_get_bibstem_masterid():
     dictionary = {}
     with app.session_scope() as session:
