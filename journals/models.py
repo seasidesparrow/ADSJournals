@@ -168,3 +168,18 @@ class RasterControl(Base):
 
     def __repr(self):
         return "RasterControl(rasterid='{self.rasterid}')".format(self=self)
+
+
+class RefSource(Base):
+    __tablename__ = 'refsource'
+
+    refsourceid = Column(Integer, primary_key=True, autoincrement=True,
+                        unique=True, nullable=False)
+    masterid = Column(Integer, ForeignKey('master.masterid'),
+                      primary_key=True, nullable=False)
+    refsource_list = Column(JSONB, server_default="'{}'")
+    updated = Column(UTCDateTime, onupdate=get_date)
+    created = Column(UTCDateTime, default=get_date)
+
+    def __repr__(self):
+        return "RefSource(refsourceid='{self.refsourceid}')".format(self=self)
