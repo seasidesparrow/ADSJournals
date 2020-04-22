@@ -40,7 +40,11 @@ def task_db_bibstems_to_master(recs):
                     rtype = reftypes[r[1]]
                 else:
                     rtype = 'na'
-                session.add(JournalsMaster(bibstem=r[0], journal_name=r[2], pubtype=ptype, refereed=rtype, defunct=False))
+                check_row = session.query(JournalsMaster(bibstem=r[0]))
+                if len(check_row) == 0:
+                    session.add(JournalsMaster(bibstem=r[0], journal_name=r[2], pubtype=ptype, refereed=rtype, defunct=False))
+                else:
+                    logger.info("Bibstem already exists: {0}".format(r)
             try:
                 session.commit()
             except Exception, err:
