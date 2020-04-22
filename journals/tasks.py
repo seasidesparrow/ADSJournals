@@ -30,26 +30,21 @@ def task_db_bibstems_to_master(recs):
     pubtypes = {'C': 'Conf. Proc.', 'J': 'Journal', 'R': 'Journal'}
     reftypes = {'C': 'na', 'J': 'no', 'R': 'yes'}
     with app.session_scope() as session:
+        extant_bibstems = [x[0] for x in session.query(JournalsMaster.bibstem)]
         if len(recs) > 0:
             for r in recs:
-                if r[1] in pubtypes:
-                    ptype = pubtypes[r[1]]
-                else:
-                    ptype = 'Other'
-                if r[1] in reftypes:
-                    rtype = reftypes[r[1]]
-                else:
-                    rtype = 'na'
-                print "WTF: bibstem: ", r[0]
-                try:
-                    check_row = session.query(JournalsMaster.bibstem=r[0])
-                except Exception, err:
-                    print "HAHA WUT:",err
-                    check_row = []
-                if len(check_row) == 0:
+                if r[0] not in extant_bibstems:
+                    if r[1] in pubtypes:
+                        ptype = pubtypes[r[1]]
+                    else:
+                        ptype = 'Other'
+                    if r[1] in reftypes:
+                        rtype = reftypes[r[1]]
+                    else:
+                        rtype = 'na'
                     session.add(JournalsMaster(bibstem=r[0], journal_name=r[2], pubtype=ptype, refereed=rtype, defunct=False))
                 else:
-                    logger.info("Bibstem already exists: {0}".format(r))
+                    logger.info("Bibstem {0} already in master".format(r[0]))
             try:
                 session.commit()
             except Exception, err:
