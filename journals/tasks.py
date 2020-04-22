@@ -40,8 +40,9 @@ def task_db_bibstems_to_master(recs):
                     rtype = reftypes[r[1]]
                 else:
                     rtype = 'na'
+                print "WTF: bibstem: ", r[0]
                 try:
-                    check_row = session.query(JournalsMaster(bibstem=r[0]))
+                    check_row = session.query(JournalsMaster.bibstem=r[0])
                 except Exception, err:
                     print "HAHA WUT:",err
                     check_row = []
