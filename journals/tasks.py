@@ -44,7 +44,7 @@ def task_db_bibstems_to_master(recs):
                         rtype = 'na'
                     session.add(JournalsMaster(bibstem=r[0], journal_name=r[2], pubtype=ptype, refereed=rtype, defunct=False))
                 else:
-                    logger.info("Bibstem {0} already in master".format(r[0]))
+                    logger.debug("task_db_bibstems_to_master: Bibstem {0} already in master".format(r[0]))
             try:
                 session.commit()
             except Exception, err:
