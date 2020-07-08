@@ -58,7 +58,7 @@ def task_db_load_abbrevs(recs):
         if len(recs) > 0:
             for r in recs:
                 try:
-                    session.add(Abbreviations(masterid=r[0], abbreviation=r[1]))
+                    session.add(JournalsAbbreviations(masterid=r[0], abbreviation=r[1]))
                     session.commit()
                 except Exception, err:
                     logger.warn("Problem with abbreviation: %s,%s" % (r[0], r[1]))
@@ -72,7 +72,7 @@ def task_db_load_issn(recs):
         if len(recs) > 0:
             for r in recs:
                 try:
-                    session.add(Identifiers(masterid=r[0], id_type='ISSN', id_value=r[1]))
+                    session.add(JournalsIdentifiers(masterid=r[0], id_type='ISSN', id_value=r[1]))
                     session.commit()
                 except Exception as e:
                     logger.warn("Duplicate ISSN ident skipped: %s,%s" % (r[0], r[1]))
@@ -124,7 +124,7 @@ def task_db_load_holdings(recs, infile):
                     h_data = h_out[bibstem]
                     for d in h_data:
                         try:
-                            session.add(Holdings(masterid=masterid, volumes_list=d))
+                            session.add(JournalsHoldings(masterid=masterid, volumes_list=d))
                             session.commit()
                         except Exception, err:
                             logger.warn("Error adding holdings for {0}".format(bibstem))
