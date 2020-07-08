@@ -103,7 +103,7 @@ def upgrade():
     sa.PrimaryKeyConstraint('publisherid', 'masterid'),
     sa.UniqueConstraint('publisherid')
     )
-    op.create_table('raster',
+    op.create_table('rastercontrol',
     sa.Column('pubhistid', sa.Integer(), nullable=False),
     sa.Column('rasterid', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('copyrt_file', sa.String(), nullable=True),
