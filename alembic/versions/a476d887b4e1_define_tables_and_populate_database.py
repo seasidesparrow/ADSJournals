@@ -104,7 +104,7 @@ def upgrade():
     sa.UniqueConstraint('publisherid')
     )
     op.create_table('raster',
-    sa.Column('historyid', sa.Integer(), nullable=False),
+    sa.Column('pubhistid', sa.Integer(), nullable=False),
     sa.Column('rasterid', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('copyrt_file', sa.String(), nullable=True),
     sa.Column('pubtype', sa.String(), nullable=True),
@@ -116,8 +116,8 @@ def upgrade():
     sa.Column('options', sa.String(), nullable=True),
     sa.Column('updated', sa.TIMESTAMP(), nullable=True),
     sa.Column('created', sa.TIMESTAMP(), nullable=True),
-    sa.ForeignKeyConstraint(['historyid'], ['pubhist.historyid'], ),
-    sa.PrimaryKeyConstraint('historyid', 'rasterid'),
+    sa.ForeignKeyConstraint(['pubhistid'], ['pubhist.pubhistid'], ),
+    sa.PrimaryKeyConstraint('pubhistid', 'rasterid'),
     sa.UniqueConstraint('rasterid')
     )
     op.create_table('rastervolume',
@@ -132,13 +132,13 @@ def upgrade():
     sa.UniqueConstraint('rasterid')
     )
     op.create_table('statistics',
-    sa.Column('historyid', sa.Integer(), nullable=False),
+    sa.Column('pubhistid', sa.Integer(), nullable=False),
     sa.Column('statsid', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('statistics', postgresql.JSONB(astext_type=sa.Text()), server_default='{}', nullable=True),
     sa.Column('updated', sa.TIMESTAMP(), nullable=True),
     sa.Column('created', sa.TIMESTAMP(), nullable=True),
-    sa.ForeignKeyConstraint(['historyid'], ['pubhist.historyid'], ),
-    sa.PrimaryKeyConstraint('historyid', 'statsid'),
+    sa.ForeignKeyConstraint(['pubhistid'], ['pubhist.pubhistid'], ),
+    sa.PrimaryKeyConstraint('pubhistid', 'statsid'),
     sa.UniqueConstraint('statsid')
     )
     op.create_table('refsource',
