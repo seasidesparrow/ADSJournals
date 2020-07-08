@@ -116,7 +116,7 @@ def upgrade():
     sa.Column('options', sa.String(), nullable=True),
     sa.Column('updated', sa.TIMESTAMP(), nullable=True),
     sa.Column('created', sa.TIMESTAMP(), nullable=True),
-    sa.ForeignKeyConstraint(['historyid'], ['history.historyid'], ),
+    sa.ForeignKeyConstraint(['historyid'], ['pubhist.historyid'], ),
     sa.PrimaryKeyConstraint('historyid', 'rasterid'),
     sa.UniqueConstraint('rasterid')
     )
@@ -137,7 +137,7 @@ def upgrade():
     sa.Column('statistics', postgresql.JSONB(astext_type=sa.Text()), server_default='{}', nullable=True),
     sa.Column('updated', sa.TIMESTAMP(), nullable=True),
     sa.Column('created', sa.TIMESTAMP(), nullable=True),
-    sa.ForeignKeyConstraint(['historyid'], ['history.historyid'], ),
+    sa.ForeignKeyConstraint(['historyid'], ['pubhist.historyid'], ),
     sa.PrimaryKeyConstraint('historyid', 'statsid'),
     sa.UniqueConstraint('statsid')
     )
@@ -163,7 +163,7 @@ def downgrade():
     op.drop_table('names')
     op.drop_table('idents')
     op.drop_table('holdings')
-    op.drop_table('history')
+    op.drop_table('pubhist')
     op.drop_table('abbrevs')
     op.drop_column('master','pubtype')
     pub_type = postgresql.ENUM('Journal', 'Conf. Proc.', 'Monograph', 'Book', 'Software', 'Other', name='pub_type') 
