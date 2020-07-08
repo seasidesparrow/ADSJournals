@@ -88,7 +88,7 @@ def task_db_load_xref(recs):
         if len(recs) > 0:
             for r in recs:
                 try:
-                    session.add(Identifiers(masterid=r[0], id_type='CROSSREF', id_value=r[1]))
+                    session.add(JournalsIdentifiers(masterid=r[0], id_type='CROSSREF', id_value=r[1]))
                     session.commit()
                 except Exception as e:
                     logger.warn("Duplicate XREF ident skipped: %s,%s" % (r[0], r[1]))
