@@ -270,8 +270,14 @@ class JournalsRaster(Base):
                        primary_key=True, nullable=False)
     rasterid = Column(Integer, primary_key=True, autoincrement=True,
                       unique=True, nullable=False)
-    embargo_months = Column(Integer)
-    volume_properties = Column(JSONB, server_default="'{}'")
+    copyrt_file = Column(String, nullable=True)
+    pubtype = Column(String, nullable=True)
+    bibstem = Column(String, nullable=True)
+    abbrev = Column(String, nullable=True)
+    width = Column(Integer, nullable=True)
+    height = Column(Integer, nullable=True)
+    embargo = Column(Integer, nullable=True)
+    options = Column(String, nullable=True)
     updated = Column(UTCDateTime, onupdate=get_date)
     created = Column(UTCDateTime, default=get_date)
 
@@ -279,7 +285,22 @@ class JournalsRaster(Base):
         return "raster.rasterid='{self.rasterid}'".format(self=self)
 
 
-class RefSource(Base):
+class JournalsRasterVolume(Base):
+    __tablename__ = 'rastervolume'
+    rasterid = Column(Integer, ForeignKey('raster.rasterid'),
+                      primary_key=True, nullable=False)
+    rvolid = Column(Integer, primary_key = True, autoincrement=True,
+                    unique=True, nullable=False)
+    volume_number = Column(String, nullable=False)
+    volume_properties = Column(JSONB, server_default="'{}'")
+    updated = Column(UTCDateTime, onupdate=get_date)
+    created = Column(UTCDateTime, default=get_date)
+
+    def __repr(self):
+        return "rastervolume.rvolid='{self.rasterid'".format(self=self)
+
+
+class JournalsRefSource(Base):
     __tablename__ = 'refsource'
 
     refsourceid = Column(Integer, primary_key=True, autoincrement=True,

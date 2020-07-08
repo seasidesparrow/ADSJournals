@@ -42,8 +42,8 @@ def upgrade():
     sa.PrimaryKeyConstraint('abbrevid', 'masterid'),
     sa.UniqueConstraint('abbrevid')
     )
-    op.create_table('history',
-    sa.Column('historyid', sa.Integer(), autoincrement=True, nullable=False),
+    op.create_table('pubhist',
+    sa.Column('pubhistid', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('masterid', sa.Integer(), nullable=False),
     sa.Column('year_start', sa.Integer(), nullable=True),
     sa.Column('year_end', sa.Integer(), nullable=True),
@@ -54,8 +54,8 @@ def upgrade():
     sa.Column('updated', sa.TIMESTAMP(), nullable=True),
     sa.Column('created', sa.TIMESTAMP(), nullable=True),
     sa.ForeignKeyConstraint(['masterid'], ['master.masterid'], ),
-    sa.PrimaryKeyConstraint('historyid', 'masterid'),
-    sa.UniqueConstraint('historyid')
+    sa.PrimaryKeyConstraint('pubhistid', 'masterid'),
+    sa.UniqueConstraint('pubhistid')
     )
     op.create_table('holdings',
     sa.Column('holdingsid', sa.Integer(), autoincrement=True, nullable=False),
@@ -103,7 +103,7 @@ def upgrade():
     sa.PrimaryKeyConstraint('publisherid', 'masterid'),
     sa.UniqueConstraint('publisherid')
     )
-    op.create_table('rastercontrol',
+    op.create_table('raster',
     sa.Column('historyid', sa.Integer(), nullable=False),
     sa.Column('rasterid', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('copyrt_file', sa.String(), nullable=True),
@@ -125,6 +125,8 @@ def upgrade():
     sa.Column('rvolid', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('volume_number', sa.String(), nullable=False),
     sa.Column('volume_properties', postgresql.JSONB(astext_type=sa.Text()), server_default='{}', nullable=True),
+    sa.Column('updated', sa.TIMESTAMP(), nullable=True),
+    sa.Column('created', sa.TIMESTAMP(), nullable=True),
     sa.ForeignKeyConstraint(['rasterid'], ['rastercontrol.rasterid'], ),
     sa.PrimaryKeyConstraint('rasterid','rvolid'),
     sa.UniqueConstraint('rasterid')
