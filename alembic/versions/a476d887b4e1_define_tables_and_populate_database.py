@@ -106,12 +106,27 @@ def upgrade():
     op.create_table('rastercontrol',
     sa.Column('historyid', sa.Integer(), nullable=False),
     sa.Column('rasterid', sa.Integer(), autoincrement=True, nullable=False),
-    sa.Column('embargo_months', sa.Integer(), nullable=True),
-    sa.Column('volume_properties', postgresql.JSONB(astext_type=sa.Text()), server_default='{}', nullable=True),
+    sa.Column('copyrt_file', sa.String(), nullable=True),
+    sa.Column('pubtype', sa.String(), nullable=True),
+    sa.Column('bibstem', sa.String(), nullable=True),
+    sa.Column('abbrev', sa.String(), nullable=True),
+    sa.Column('width', sa.Integer(), nullable=True),
+    sa.Column('height', sa.Integer(), nullable=True),
+    sa.Column('embargo', sa.Integer(), nullable=True),
+    sa.Column('options', sa.String(), nullable=True),
     sa.Column('updated', sa.TIMESTAMP(), nullable=True),
     sa.Column('created', sa.TIMESTAMP(), nullable=True),
     sa.ForeignKeyConstraint(['historyid'], ['history.historyid'], ),
     sa.PrimaryKeyConstraint('historyid', 'rasterid'),
+    sa.UniqueConstraint('rasterid')
+    )
+    op.create_table('rastervolume',
+    sa.Column('rasterid', sa.Integer(), nullable=False),
+    sa.Column('rvolid', sa.Integer(), autoincrement=True, nullable=False),
+    sa.Column('volume_number', sa.String(), nullable=False),
+    sa.Column('volume_properties', postgresql.JSONB(astext_type=sa.Text()), server_default='{}', nullable=True),
+    sa.ForeignKeyConstraint(['rasterid'], ['rastercontrol.rasterid'], ),
+    sa.PrimaryKeyConstraint('rasterid','rvolid'),
     sa.UniqueConstraint('rasterid')
     )
     op.create_table('statistics',
@@ -124,11 +139,23 @@ def upgrade():
     sa.PrimaryKeyConstraint('historyid', 'statsid'),
     sa.UniqueConstraint('statsid')
     )
+    op.create_table('refsource',
+    sa.Column('refsourceid', sa.Integer(), autoincrement=True, nullable=False),
+    sa.Column('masterid', sa.Integer(), nullable=False),
+    sa.Column('refsource_list', postgresql.JSONB(astext_type=sa.Text()), server_default='{}', nullable=True),
+    sa.Column('updated', sa.TIMESTAMP(), nullable=True),
+    sa.Column('created', sa.TIMESTAMP(), nullable=True),
+    sa.ForeignKeyConstraint(['masterid'], ['master.masterid'], ),
+    sa.PrimaryKeyConstraint('refsourceid', 'masterid'),
+    sa.UniqueConstraint('refsourceid')
+    )
     # ### end Alembic commands ###
 
 
 def downgrade():
+    op.drop_table('refsource')
     op.drop_table('statistics')
+    op.drop_table('rastervolume')
     op.drop_table('rastercontrol')
     op.drop_table('publisher')
     op.drop_table('names')
