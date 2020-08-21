@@ -30,17 +30,21 @@ def task_db_bibstems_to_master(recs):
     pubtypes = {'C': 'Conf. Proc.', 'J': 'Journal', 'R': 'Journal'}
     reftypes = {'C': 'na', 'J': 'no', 'R': 'yes'}
     with app.session_scope() as session:
+        extant_bibstems = [x[0] for x in session.query(JournalsMaster.bibstem)]
         if len(recs) > 0:
             for r in recs:
-                if r[1] in pubtypes:
-                    ptype = pubtypes[r[1]]
+                if r[0] not in extant_bibstems:
+                    if r[1] in pubtypes:
+                        ptype = pubtypes[r[1]]
+                    else:
+                        ptype = 'Other'
+                    if r[1] in reftypes:
+                        rtype = reftypes[r[1]]
+                    else:
+                        rtype = 'na'
+                    session.add(JournalsMaster(bibstem=r[0], journal_name=r[2], pubtype=ptype, refereed=rtype, defunct=False))
                 else:
-                    ptype = 'Other'
-                if r[1] in reftypes:
-                    rtype = reftypes[r[1]]
-                else:
-                    rtype = 'na'
-                session.add(JournalsMaster(bibstem=r[0], journal_name=r[2], pubtype=ptype, refereed=rtype, defunct=False))
+                    logger.debug("task_db_bibstems_to_master: Bibstem {0} already in master".format(r[0]))
             try:
                 session.commit()
             except Exception, err:
@@ -54,7 +58,7 @@ def task_db_load_abbrevs(recs):
         if len(recs) > 0:
             for r in recs:
                 try:
-                    session.add(Abbreviations(masterid=r[0], abbreviation=r[1]))
+                    session.add(JournalsAbbreviations(masterid=r[0], abbreviation=r[1]))
                     session.commit()
                 except Exception, err:
                     logger.warn("Problem with abbreviation: %s,%s" % (r[0], r[1]))
@@ -68,7 +72,7 @@ def task_db_load_issn(recs):
         if len(recs) > 0:
             for r in recs:
                 try:
-                    session.add(Identifiers(masterid=r[0], id_type='ISSN', id_value=r[1]))
+                    session.add(JournalsIdentifiers(masterid=r[0], id_type='ISSN', id_value=r[1]))
                     session.commit()
                 except Exception as e:
                     logger.warn("Duplicate ISSN ident skipped: %s,%s" % (r[0], r[1]))
@@ -84,7 +88,7 @@ def task_db_load_xref(recs):
         if len(recs) > 0:
             for r in recs:
                 try:
-                    session.add(Identifiers(masterid=r[0], id_type='CROSSREF', id_value=r[1]))
+                    session.add(JournalsIdentifiers(masterid=r[0], id_type='CROSSREF', id_value=r[1]))
                     session.commit()
                 except Exception as e:
                     logger.warn("Duplicate XREF ident skipped: %s,%s" % (r[0], r[1]))
@@ -120,7 +124,7 @@ def task_db_load_holdings(recs, infile):
                     h_data = h_out[bibstem]
                     for d in h_data:
                         try:
-                            session.add(Holdings(masterid=masterid, volumes_list=d))
+                            session.add(JournalsHoldings(masterid=masterid, volumes_list=d))
                             session.commit()
                         except Exception, err:
                             logger.warn("Error adding holdings for {0}".format(bibstem))
