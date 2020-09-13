@@ -9,7 +9,7 @@ class Holdings():
     def __init__(self):
         try:
             config.API_KEY
-        except NameError, err:
+        except NameError as err:
             config.API_KEY = 'dummy_token'
 
         token = 'Bearer ' + config.API_KEY
@@ -50,7 +50,7 @@ class Holdings():
                 docs = response['docs']
                 output_array = output_array + docs
                 nstart = nstart + self.nmax
-        except Exception, err:
+        except Exception as err:
             logger.warn("Error in Holdings.fetch: %s" % err)
             return []
         else:
@@ -81,16 +81,16 @@ class Holdings():
                     yr = int(paper['year'])
                     try:
                         eso = self.convert_esources_to_int(paper['esources'])
-                    except Exception, err:
+                    except Exception as err:
                         eso = 0
                     outdict = {'page': pg, 'year': yr, 'esources': eso}
                     if bs in holdings_list:
                         holdings_list[bs].append(outdict)
                     else:
                         holdings_list[bs] = [outdict]
-                except Exception, err:
+                except Exception as err:
                     pass
-        except Exception, err:
+        except Exception as err:
             logger.warn("Error in Holdings.process_output: %s" % err)
             return {}
         else:
@@ -106,6 +106,6 @@ class Holdings():
                     bin_int_string = bin_int_string + '0'
             bin_int_string = '0b' + bin_int_string
             esources_out = int(bin_int_string, 2)
-        except Exception, err:
+        except Exception as err:
             esources_out = 0
         return esources_out

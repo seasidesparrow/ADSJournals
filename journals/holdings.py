@@ -1,10 +1,12 @@
+from builtins import str
+from builtins import object
 import os
 import json
 import requests
 import config
 
 
-class Holdings():
+class Holdings(object):
 
     def __init__(self):
         try:

@@ -1,4 +1,5 @@
 from __future__ import absolute_import, unicode_literals
+from builtins import str
 from kombu import Queue
 from journals import app as app_module
 from journals.models import *
@@ -118,7 +119,7 @@ def task_db_load_holdings(recs, infile):
             hold = holdings.Holdings()
             output = hold.load_json(infile)
             h_out = hold.process_output(output)
-            for bibstem, masterid in recs.items():
+            for bibstem, masterid in list(recs.items()):
                 bibstem = str(bibstem)
                 try:
                     h_data = h_out[bibstem]

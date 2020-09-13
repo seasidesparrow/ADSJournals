@@ -47,7 +47,7 @@ def task_db_bibstems_to_master(recs):
                     logger.debug("task_db_bibstems_to_master: Bibstem {0} already in master".format(r[0]))
             try:
                 session.commit()
-            except Exception, err:
+            except Exception as err:
                 logger.error("Problem with database commit: %s" % err)
                 raise DBCommit_Exception("Could not commit to db, stopping now.")
 
@@ -60,7 +60,7 @@ def task_db_load_abbrevs(recs):
                 try:
                     session.add(JournalsAbbreviations(masterid=r[0], abbreviation=r[1]))
                     session.commit()
-                except Exception, err:
+                except Exception as err:
                     logger.warn("Problem with abbreviation: %s,%s" % (r[0], r[1]))
         else:
             logger.info("There were no abbreviations to load!")
@@ -105,7 +105,7 @@ def task_db_get_bibstem_masterid():
         try:
             for record in session.query(JournalsMaster.masterid, JournalsMaster.bibstem):
                 dictionary[record.bibstem] = record.masterid
-        except Exception, err:
+        except Exception as err:
             logger.error("Error: failed to read bibstem-masterid dict from table master")
             raise DBRead_Exception("Could not read from database!")
     return dictionary
@@ -126,11 +126,11 @@ def task_db_load_holdings(recs, infile):
                         try:
                             session.add(JournalsHoldings(masterid=masterid, volumes_list=d))
                             session.commit()
-                        except Exception, err:
+                        except Exception as err:
                             logger.warn("Error adding holdings for {0}".format(bibstem))
                             session.rollback()
                             session.commit()
-                except Exception, err:
+                except Exception as err:
                     logger.warn("Bibstem does not exist: {0}".format(bibstem))
         else:
             logger.error("No holdings data to load!")

@@ -43,7 +43,7 @@ def get_arguments():
 def load_master_table():
     bibstems = utils.read_bibstems_list()
     recs = []
-    for k, v in list(bibstems.items()):
+    for k, v in bibstems.items():
         bibstem = k
         pubtype = v['type']
         journal_name = v['pubname']
@@ -59,7 +59,7 @@ def load_master_table():
 def load_abbreviations(masterdict):
     abbrevs = utils.read_abbreviations_list()
     recs = []
-    for k, v in list(abbrevs.items()):
+    for k, v in abbrevs.items():
         try:
             if k in masterdict:
                 logger.debug("Got mid for bibstem %s", k)
@@ -86,7 +86,7 @@ def load_completeness(masterdict):
     pub_dict = utils.read_complete_csvs()
     recsi = []
     recsx = []
-    for k, v in list(pub_dict.items()):
+    for k, v in pub_dict.items():
         try:
             if k in masterdict:
                 logger.debug("Got mid for bibstem %s", k)
