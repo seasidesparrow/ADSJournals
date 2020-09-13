@@ -14,13 +14,13 @@ def normalize(instring):
     # input from whatever, output to unicode
     try:
         work_string = instring.decode('utf-8')
-    except Exception as err:
+    except Exception, err:
         try:
             work_string = instring.decode('iso-8859-1')
-        except Exception as err:
+        except Exception, err:
             try:
                 work_string = instring.decode('cp1252-1')
-            except Exception as err:
+            except Exception, err:
                 return unicode_entities(instring)
     return unicode_entities(work_string)
 
@@ -38,7 +38,7 @@ def read_bibstems_list():
                     # logger.warn("Duplicate in bibstems list: {0}".format(bibstem))
                     pass
                 data[bibstem] = {'type': bstype, 'pubname': bspubname}
-    except Exception as err:
+    except Exception, err:
         raise ReadBibstemException(err)
     return data
 
@@ -71,7 +71,7 @@ def read_canonical_list():
             for l in f.readlines():
                 (bibcode, a, b, c) = l.rstrip().split('\t')
                 bibc.append(bibcode)
-    except Exception as err:
+    except Exception, err:
         raise ReadCanonicalException(err)
     return bibc
 
@@ -89,7 +89,7 @@ def read_complete_csvs():
                         (journal, bibstem, issn, xref, startyear, startvol,
                          endvol, complete, complete_origin, publisher, scanned,
                          online, url, notes) = l.strip().split('|')
-                    except Exception as err:
+                    except Exception, err:
                         # logger.warn("Unparseable csv: {0}".format(l.strip()))
                         pass
                     else:
@@ -115,7 +115,7 @@ def read_complete_csvs():
                                              u'online': online,
                                              u'url': url,
                                              u'notes': notes}
-        except Exception as err:
+        except Exception, err:
             # logger.warn('Cant load collection {0}:'.format(coll))
             pass
 
@@ -136,7 +136,7 @@ def parse_bibcodes(bibcode):
             auth = bibcode[18]
             parsed_bib = {"bibcode": bibcode, "year": year, "bibstem": stem, "volume": volm,
                           "qualifier": qual, "page": page, "initial": auth}
-        except Exception as err:
+        except Exception, err:
             # logger.warn("Nonstandard bibcode: {0}".format(bibcode))
             pass
     return parsed_bib

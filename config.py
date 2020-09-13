@@ -1,3 +1,5 @@
+''' I got yer docstring right here.... '''
+
 # COLLECTIONS is a list of which collections/databases are stored
 COLLECTIONS = ['ast', 'phy', 'gen']
 

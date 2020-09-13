@@ -1,8 +1,9 @@
+''' You want a docstring, you got it.'''
+
 import argparse
-import config
+from adsputils import setup_logging
 from journals import tasks
 from journals import utils
-from adsputils import setup_logging
 
 logger = setup_logging('run.py')
 
@@ -47,8 +48,8 @@ def load_master_table():
         pubtype = v['type']
         journal_name = v['pubname']
         recs.append((bibstem, pubtype, journal_name))
-    if len(recs) > 0:
-        logger.debug("Inserting {0} bibstems into Master".format(len(recs)))
+    if recs:
+        logger.debug("Inserting %s bibstems into Master", len(recs))
         tasks.task_db_bibstems_to_master(recs)
     else:
         logger.warn("No bibstems to insert")
@@ -61,21 +62,21 @@ def load_abbreviations(masterdict):
     for k, v in abbrevs.items():
         try:
             if k in masterdict:
-                logger.debug("Got mid for bibstem {0}".format(k))
+                logger.debug("Got mid for bibstem %s", k)
                 mid = masterdict[k]
                 for a in v:
                     recs.append((mid, a))
             else:
-                logger.debug("No mid for bibstem {0}".format(k))
-        except Exception, err:
-            logger.warn("Error with bibstem {0}".format(k))
-            logger.warn("Error: {0}".format(err))
-    if len(recs) > 0:
-        logger.debug("Inserting {0} abbreviations into Abbreviations".format(len(recs)))
+                logger.debug("No mid for bibstem %s", k)
+        except Exception as err:
+            logger.warn("Error with bibstem %s", k)
+            logger.warn("Error: %s", err)
+    if recs:
+        logger.debug("Inserting %s abbreviations into Abbreviations", len(recs))
         try:
             tasks.task_db_load_abbrevs(recs)
-        except Exception, err:
-            logger.error("Could not load abbreviations: {0}".format(err))
+        except Exception as err:
+            logger.error("Could not load abbreviations: %s", err)
     else:
         logger.warn("There are no abbreviations to load.")
     return
@@ -88,7 +89,7 @@ def load_completeness(masterdict):
     for k, v in pub_dict.items():
         try:
             if k in masterdict:
-                logger.debug("Got mid for bibstem {0}".format(k))
+                logger.debug("Got mid for bibstem %s", k)
                 mid = masterdict[k]
                 a = v['issn']
                 b = v['xref']
@@ -97,13 +98,13 @@ def load_completeness(masterdict):
                 if b != '':
                     recsx.append((mid, b))
             else:
-                logger.debug("No mid for bibstem {0}".format(k))
-        except Exception, err:
-            logger.warn("Error with bibstem {0}".format(k))
-            logger.warn("Error: {0}".format(err))
-    if len(recsi) > 0:
+                logger.debug("No mid for bibstem %s", k)
+        except Exception as err:
+            logger.warn("Error with bibstem %s", k)
+            logger.warn("Error: %s", err)
+    if recsi:
         tasks.task_db_load_issn(recsi)
-    if len(recsx) > 0:
+    if recsx:
         tasks.task_db_load_xref(recsx)
     return
 
@@ -111,8 +112,8 @@ def load_completeness(masterdict):
 def calc_holdings(masterdict, json_file):
     try:
         tasks.task_db_load_holdings(masterdict, json_file)
-    except Exception, err:
-        logger.error("Failed to load holdings: {0}".format(err))
+    except Exception as err:
+        logger.error("Failed to load holdings: %s", err)
     return
 
 
@@ -131,9 +132,9 @@ def main():
     # journals.master, so try to load it
     try:
         masterdict = tasks.task_db_get_bibstem_masterid()
-        logger.info("masterdict has {0} records".format(len(masterdict)))
-    except Exception, err:
-        logger.error("Error reading master table bibstem-masterid mapping: {0}".format(err))
+        logger.info("masterdict has %s records", len(masterdict))
+    except Exception as err:
+        logger.error("Error reading master table bibstem-masterid mapping: %s", err)
     else:
         # load bibstem-journal name abbreviation pairs
         if args.load_abbrevs:
