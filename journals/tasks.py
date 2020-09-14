@@ -99,6 +99,22 @@ def task_db_load_xref(recs):
 
 
 @app.task(queue='load-datafiles')
+def task_db_load_publisher(recs):
+    with app.session_scope() as session:
+        if len(recs) > 0:
+            for r in recs:
+                try:
+                    session.add(JournalsPublisher(masterid=r[0], pubname=r[1], puburl=r[2]))
+                    session.commit()
+                except Exception as e:
+                    logger.warn("Duplicate XREF ident skipped: %s,%s" % (r[0], r[1]))
+                    session.rollback()
+                    session.flush()
+        else:
+            logger.info("There were no XREF IDs to load!")
+
+
+@app.task(queue='load-datafiles')
 def task_db_get_bibstem_masterid():
     dictionary = {}
     with app.session_scope() as session:

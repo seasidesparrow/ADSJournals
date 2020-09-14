@@ -14,6 +14,10 @@ JOURNAL_ISSN_FILE = 'journal_issn'
 ISSN_JOURNAL_FILE = 'issn2journal'
 CANONICAL_BIB_FILE = 'bib2accno.dat'
 
+
 # ESOURCES: for holdings table
 # Any new esources must be **prepended** to this list
 ESOURCE_LIST = ['PUB_HTML', 'PUB_PDF', 'EPRINT_HTML', 'EPRINT_PDF', 'ADS_SCAN', 'ADS_PDF']
+
+# REFSOURCE_FILE
+BIB_TO_REFERENCES_FILE = '/proj/ads/references/links/citing2file.dat'

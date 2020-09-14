@@ -85,6 +85,7 @@ def load_completeness(masterdict):
     pub_dict = utils.read_complete_csvs()
     recsi = []
     recsx = []
+    recsp = []
     for k, v in pub_dict.items():
         try:
             if k in masterdict:
@@ -92,19 +93,26 @@ def load_completeness(masterdict):
                 mid = masterdict[k]
                 a = v['issn']
                 b = v['xref']
+                h = v['publisher']
+                k = v['url']
                 if a != '':
                     recsi.append((mid, a))
                 if b != '':
                     recsx.append((mid, b))
+                if h != '':
+                    recsp.append((mid, h, k))
+             
             else:
                 logger.debug("No mid for bibstem {0}".format(k))
         except Exception, err:
             logger.warn("Error with bibstem {0}".format(k))
             logger.warn("Error: {0}".format(err))
-    if len(recsi) > 0:
+    if recsi:
         tasks.task_db_load_issn(recsi)
-    if len(recsx) > 0:
+    if recsx:
         tasks.task_db_load_xref(recsx)
+    if recsp:
+        tasks.task_db_load_publisher(recsp)
     return
 
 
