@@ -2,7 +2,7 @@ from adsputils import get_date, UTCDateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import (Table, Column, Integer, Numeric, String, TIMESTAMP,
                         ForeignKey, Boolean, Float, UniqueConstraint)
-from sqlalchemy.dialects.postgresql import JSONB, ENUM
+from sqlalchemy.dialects.postgresql import ENUM
 
 Base = declarative_base()
 
@@ -19,7 +19,6 @@ class JournalsMaster(Base):
     journal_name = Column(String, nullable=False)
     primary_language = Column(String)
     multilingual = Column(Boolean)
-    defunct = Column(Boolean, nullable=False, default=False)
     updated = Column(UTCDateTime, onupdate=get_date)
     created = Column(UTCDateTime, default=get_date)
 
@@ -159,7 +158,7 @@ class JournalsPublisher(Base):
                       primary_key=True, nullable=False)
     pubname = Column(String)
     pubaddress = Column(String)
-    pubcontact = Column(JSONB, server_default="'{}'")
+    pubcontact = Column(Text)
     puburl = Column(String)
     updated = Column(UTCDateTime, onupdate=get_date)
     created = Column(UTCDateTime, default=get_date)
@@ -176,7 +175,7 @@ class JournalsPublisherHistory(Base):
     masterid = Column(Integer)
     pubname = Column(String)
     pubaddress = Column(String)
-    pubcontact = Column(JSONB)
+    pubcontact = Column(Text)
     puburl = Column(String)
     updated = Column(UTCDateTime, onupdate=get_date)
     created = Column(UTCDateTime, default=get_date)
@@ -194,6 +193,7 @@ class JournalsPubHist(Base):
                       primary_key=True, nullable=False)
     year_start = Column(Integer)
     year_end = Column(Integer)
+    complete = Column(String)
     predecessor_id = Column(Integer, ForeignKey('publisher.publisherid'))
     successor_id = Column(Integer, ForeignKey('publisher.publisherid'))
     orgid = Column(String)
@@ -232,7 +232,7 @@ class JournalsHoldings(Base):
                         unique=True, nullable=False)
     masterid = Column(Integer, ForeignKey('master.masterid'),
                       primary_key=True, nullable=False)
-    volumes_list = Column(JSONB, server_default="'{}'")
+    volumes_list = Column(Text)
     complete = Column(Boolean, default=False)
     updated = Column(UTCDateTime, onupdate=get_date)
     created = Column(UTCDateTime, default=get_date)
@@ -252,7 +252,7 @@ class JournalsStatistics(Base):
                        primary_key=True, nullable=False)
     statsid = Column(Integer, primary_key=True, autoincrement=True,
                      unique=True, nullable=False)
-    statistics = Column(JSONB, server_default="'{}'")
+    statistics = Column(Text)
     updated = Column(UTCDateTime, onupdate=get_date)
     created = Column(UTCDateTime, default=get_date)
 
@@ -292,7 +292,7 @@ class JournalsRasterVolume(Base):
     rvolid = Column(Integer, primary_key = True, autoincrement=True,
                     unique=True, nullable=False)
     volume_number = Column(String, nullable=False)
-    volume_properties = Column(JSONB, server_default="'{}'")
+    volume_properties = Column(Text)
     updated = Column(UTCDateTime, onupdate=get_date)
     created = Column(UTCDateTime, default=get_date)
 
@@ -307,7 +307,7 @@ class JournalsRefSource(Base):
                         unique=True, nullable=False)
     masterid = Column(Integer, ForeignKey('master.masterid'),
                       primary_key=True, nullable=False)
-    refsource_list = Column(JSONB, server_default="'{}'")
+    refsource_list = Column(Text)
     updated = Column(UTCDateTime, onupdate=get_date)
     created = Column(UTCDateTime, default=get_date)
 

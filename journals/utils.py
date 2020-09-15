@@ -1,5 +1,7 @@
+from bs4 import BeautifulSoup as bs
 import config
 from namedentities import named_entities, unicode_entities
+import os
 
 class ReadBibstemException(Exception):
     pass
@@ -119,6 +121,64 @@ def read_complete_csvs():
             pass
         
     return data
+
+
+def read_raster_xml(bibstem):
+    raster_dir = config.JDB_DATA_DIR + config.RASTER_CONFIG_DIR
+    raster_file = raster_dir + bibstem + '.xml'
+    if os.path.isfile(raster_file):
+        with open(xf, 'rU') as fx:
+            filestem = xf.split('/')[-1].rstrip('.xml')
+            data = fx.read().rstrip()
+            soup = bs(data,'html5lib')
+            pub = soup.find('publication')
+        
+            # get volume specific parameters
+            volume_specific = pub.find_all('volumes')
+            if volume_specific:
+                volumes = []
+                for v in volume_specific:
+                    vol_param = dict()
+                    vol_range = dict()
+                    for t in v.children:
+                        if t.name:
+                            try:
+                                vol_param[t.name] = t.contents[0].strip()
+                                if not vol_param[t.name]:
+                                    del vol_param[t.name]
+                            except Exception as err:
+                                print "volumening problem:",err
+                    if vol_param:
+                        vol_range['range'] = v["range"]
+                        vol_range['param'] = vol_param
+                        volumes.append(vol_range)
+                  
+            # now make a dict of the general params
+            global_param = dict()
+            for t in pub.children:
+                if t.name:
+                    try:
+                        global_param[t.name] = t.contents[0].strip()
+                        if not global_param[t.name]:
+                            del global_param[t.name]
+                    except Exception, err:
+                        if t.name == 'bibstem':
+                            global_param['bibstem'] = filestem
+                        # else:
+                            # print "Error in %s: %s\t%s"%(filestem,t.name,err)
+        
+            try:
+                if volumes:
+                    # add volume-specific params to dict as an array
+                    global_param['rastervol'] = volumes
+                return global_param
+            except Exception, err:
+                print 'ERROR:',err
+    else:
+        return
+
+
+
 
 
 def parse_bibcodes(bibcode):

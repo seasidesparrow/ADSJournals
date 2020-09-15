@@ -14,6 +14,8 @@ JOURNAL_ISSN_FILE = 'journal_issn'
 ISSN_JOURNAL_FILE = 'issn2journal'
 CANONICAL_BIB_FILE = 'bib2accno.dat'
 
+# RASTERIZING.xml directory
+RASTER_CONFIG_DIR = 'raster_config/'
 
 # ESOURCES: for holdings table
 # Any new esources must be **prepended** to this list

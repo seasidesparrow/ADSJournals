@@ -35,6 +35,12 @@ def get_arguments():
                         action='store_true',
                         help='Load spreadsheet complete_ast')
 
+    parser.add_argument('-lr',
+                        '--load-rasterconf',
+                        dest='load_raster',
+                        action='store_true',
+                        help='Load rasterization control parameters')
+
     args = parser.parse_args()
     return args
 
@@ -54,6 +60,16 @@ def load_master_table():
         logger.warn("No bibstems to insert")
     return
 
+
+def load_rasterconfig(masterdict):
+    recsr = []
+    recsrv = []
+    for k, v in masterdict.items():
+        raster_rec = utils.read_raster_xml(k)
+        if raster_rec:
+            print("LOL! %s",raster_rec)
+    return
+           
 
 def load_abbreviations(masterdict):
     abbrevs = utils.read_abbreviations_list()
@@ -93,7 +109,14 @@ def load_completeness(masterdict):
                 mid = masterdict[k]
                 a = v['issn']
                 b = v['xref']
+                c = v['startyear']
+                d = v['startvol']
+                e = v['endvol']
+                f = v['complete']
+                g = v['complete_origin']
                 h = v['publisher']
+                i = v['scanned']
+                j = v['online']
                 k = v['url']
                 if a != '':
                     recsi.append((mid, a))
