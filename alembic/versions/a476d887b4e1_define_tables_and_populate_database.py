@@ -23,7 +23,6 @@ def upgrade():
     sa.Column('journal_name', sa.String(), nullable=False),
     sa.Column('primary_language', sa.String(), nullable=True),
     sa.Column('multilingual', sa.Boolean(), nullable=True),
-    sa.Column('defunct', sa.Boolean(), nullable=False),
     sa.Column('updated', sa.TIMESTAMP(), nullable=True),
     sa.Column('created', sa.TIMESTAMP(), nullable=True),
     sa.Column('pubtype', postgresql.ENUM('Journal', 'Conf. Proc.', 'Monograph', 'Book', 'Software', 'Other', name='pub_type'), nullable=False),
@@ -32,6 +31,20 @@ def upgrade():
     sa.UniqueConstraint('bibstem'),
     sa.UniqueConstraint('masterid')
     )
+    op.create_table('names',
+    sa.Column('nameid', sa.Integer(), nullable=False),
+    sa.Column('masterid', sa.Integer(), nullable=False),
+    sa.Column('name_english_translated', sa.String(), nullable=True),
+    sa.Column('title_language', sa.String(), nullable=True),
+    sa.Column('name_native_language', sa.String(), nullable=True),
+    sa.Column('name_normalized', sa.String(), nullable=True),
+    sa.Column('updated', sa.TIMESTAMP(), nullable=True),
+    sa.Column('created', sa.TIMESTAMP(), nullable=True),
+    sa.ForeignKeyConstraint(['masterid'], ['master.masterid'], ),
+    sa.PrimaryKeyConstraint('nameid','masterid')
+    sa.UniqueConstraint('nameid')
+    )
+
     op.create_table('abbrevs',
     sa.Column('abbrevid', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('masterid', sa.Integer(), nullable=False),
@@ -42,11 +55,13 @@ def upgrade():
     sa.PrimaryKeyConstraint('abbrevid', 'masterid'),
     sa.UniqueConstraint('abbrevid')
     )
+
     op.create_table('pubhist',
     sa.Column('pubhistid', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('masterid', sa.Integer(), nullable=False),
     sa.Column('year_start', sa.Integer(), nullable=True),
     sa.Column('year_end', sa.Integer(), nullable=True),
+    sa.Column('complete', sa.Boolean(), nullable=True),
     sa.Column('predecessor_id', sa.Integer(), nullable=True),
     sa.Column('successor_id', sa.Integer(), nullable=True),
     sa.Column('orgid', sa.String(), nullable=True),
@@ -57,6 +72,7 @@ def upgrade():
     sa.PrimaryKeyConstraint('pubhistid', 'masterid'),
     sa.UniqueConstraint('pubhistid')
     )
+
     op.create_table('holdings',
     sa.Column('holdingsid', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('masterid', sa.Integer(), nullable=False),
@@ -68,6 +84,7 @@ def upgrade():
     sa.PrimaryKeyConstraint('holdingsid', 'masterid'),
     sa.UniqueConstraint('holdingsid')
     )
+
     op.create_table('idents',
     sa.Column('identid', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('masterid', sa.Integer(), nullable=False),
@@ -79,17 +96,7 @@ def upgrade():
     sa.PrimaryKeyConstraint('identid', 'masterid'),
     sa.UniqueConstraint('identid')
     )
-    op.create_table('names',
-    sa.Column('masterid', sa.Integer(), nullable=False),
-    sa.Column('name_english_translated', sa.String(), nullable=True),
-    sa.Column('title_language', sa.String(), nullable=True),
-    sa.Column('name_native_language', sa.String(), nullable=True),
-    sa.Column('name_normalized', sa.String(), nullable=True),
-    sa.Column('updated', sa.TIMESTAMP(), nullable=True),
-    sa.Column('created', sa.TIMESTAMP(), nullable=True),
-    sa.ForeignKeyConstraint(['masterid'], ['master.masterid'], ),
-    sa.PrimaryKeyConstraint('masterid')
-    )
+
     op.create_table('publisher',
     sa.Column('publisherid', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('masterid', sa.Integer(), nullable=False),
@@ -129,7 +136,7 @@ def upgrade():
     sa.Column('created', sa.TIMESTAMP(), nullable=True),
     sa.ForeignKeyConstraint(['rasterid'], ['rastercontrol.rasterid'], ),
     sa.PrimaryKeyConstraint('rasterid','rvolid'),
-    sa.UniqueConstraint('rasterid')
+    sa.UniqueConstraint('rvolid')
     )
     op.create_table('statistics',
     sa.Column('pubhistid', sa.Integer(), nullable=False),
