@@ -57,7 +57,7 @@ def load_master_table():
     '''
     bibstems = utils.read_bibstems_list()
     recs = []
-    for key, value in list(bibstems.items()):
+    for key, value in bibstems.items():
         bibstem = key
         pubtype = value['type']
         journal_name = value['pubname']
@@ -76,7 +76,7 @@ def load_rasterconfig(masterdict):
     '''
     recsr = []
     recsrv = []
-    for key in list(masterdict.keys()):
+    for key in masterdict.keys():
         raster_rec = utils.read_raster_xml(key)
         if raster_rec:
             print(("LOL! %s", raster_rec))
@@ -89,7 +89,7 @@ def load_abbreviations(masterdict):
     '''
     abbrevs = utils.read_abbreviations_list()
     recs = []
-    for key, value in list(abbrevs.items()):
+    for key, value in abbrevs.items():
         try:
             if key in masterdict:
                 LOGGER.debug("Got masterid for bibstem %s", key)
@@ -121,7 +121,7 @@ def load_completeness(masterdict):
     recsi = []
     recsx = []
     recsp = []
-    for key, value in list(pub_dict.items()):
+    for key, value in pub_dict.items():
         try:
             if key in masterdict:
                 LOGGER.debug("Got masterid for bibstem %s", key)

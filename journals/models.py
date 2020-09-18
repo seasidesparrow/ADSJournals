@@ -28,6 +28,7 @@ class JournalsMaster(Base):
     def __repr__(self):
         return "master.masterid='{self.masterid}'".format(self=self)
 
+
 class JournalsMasterHistory(Base):
     __tablename__ = 'master_hist'
 
@@ -53,7 +54,7 @@ class JournalsNames(Base):
     __tablename__ = 'names'
 
     nameid = Column(Integer, primary_key=True, autoincrement=True,
-                     unique=True, nullable=False)
+                    unique=True, nullable=False)
     masterid = Column(Integer, ForeignKey('master.masterid'),
                       primary_key=True, nullable=False)
     name_english_translated = Column(String)
@@ -181,7 +182,8 @@ class JournalsPublisherHistory(Base):
     created = Column(UTCDateTime, default=get_date)
 
     def __repr__(self):
-        return "publisher_hist.publisherid='{self.publisherid}'".format(self=self)
+        return "publisher_hist.publisherid='{self.publisherid}'"\
+               .format(self=self)
 
 
 class JournalsPubHist(Base):
@@ -289,7 +291,7 @@ class JournalsRasterVolume(Base):
     __tablename__ = 'rastervolume'
     rasterid = Column(Integer, ForeignKey('raster.rasterid'),
                       primary_key=True, nullable=False)
-    rvolid = Column(Integer, primary_key = True, autoincrement=True,
+    rvolid = Column(Integer, primary_key=True, autoincrement=True,
                     unique=True, nullable=False)
     volume_number = Column(String, nullable=False)
     volume_properties = Column(Text)
@@ -304,7 +306,7 @@ class JournalsRefSource(Base):
     __tablename__ = 'refsource'
 
     refsourceid = Column(Integer, primary_key=True, autoincrement=True,
-                        unique=True, nullable=False)
+                         unique=True, nullable=False)
     masterid = Column(Integer, ForeignKey('master.masterid'),
                       primary_key=True, nullable=False)
     refsource_list = Column(Text)
