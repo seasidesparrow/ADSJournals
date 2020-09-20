@@ -157,7 +157,7 @@ def upgrade():
     op.create_table('publisher_hist',
                     sa.Column('histid', sa.Integer(), autoincrement=True,
                               nullable=False),
-                    sa.Column('publisherid', sa.Integer(), nullable=False)
+                    sa.Column('publisherid', sa.Integer(), nullable=False),
                     sa.Column('masterid', sa.Integer(), nullable=False),
                     sa.Column('pubname', sa.String(), nullable=True),
                     sa.Column('pubaddress', sa.String(), nullable=True),
