@@ -1,7 +1,7 @@
 from adsputils import get_date, UTCDateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import (Table, Column, Integer, Numeric, String, TIMESTAMP,
-                        ForeignKey, Boolean, Float, UniqueConstraint)
+                        ForeignKey, Boolean, Float, Text, UniqueConstraint)
 from sqlalchemy.dialects.postgresql import ENUM
 
 Base = declarative_base()
