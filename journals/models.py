@@ -18,7 +18,8 @@ class JournalsMaster(Base):
     bibstem = Column(String, unique=True, nullable=False)
     journal_name = Column(String, nullable=False)
     primary_language = Column(String)
-    multilingual = Column(Boolean)
+    multilingual = Column(Boolean, default=False)
+    defunct = Column(Boolean, default=False)
     updated = Column(UTCDateTime, onupdate=get_date)
     created = Column(UTCDateTime, default=get_date)
 
