@@ -202,6 +202,7 @@ def upgrade():
                     sa.Column('notes', sa.String(), nullable=True),
                     sa.Column('updated', sa.TIMESTAMP(), nullable=True),
                     sa.Column('created', sa.TIMESTAMP(), nullable=True),
+                    sa.Column('superseded', sa.TIMESTAMP(), nullable=False),
                     sa.PrimaryKeyConstraint('histid'),
                     sa.UniqueConstraint('histid'))
 
@@ -252,9 +253,9 @@ def upgrade():
                     sa.Column('options', sa.String(), nullable=True),
                     sa.Column('updated', sa.TIMESTAMP(), nullable=True),
                     sa.Column('created', sa.TIMESTAMP(), nullable=True),
-                    sa.ForeignKeyConstraint(['masterid'], ['master.masterid']),
-                    sa.PrimaryKeyConstraint('masterid', 'rasterid'),
-                    sa.UniqueConstraint('rasterid'))
+                    sa.Column('superseded', sa.TIMESTAMP(), nullable=False),
+                    sa.PrimaryKeyConstraint('histid'),
+                    sa.UniqueConstraint('histid'))
 
     # history table not required
     op.create_table('rastervolume',
@@ -265,8 +266,7 @@ def upgrade():
                     sa.Column('volume_properties', sa.Text(), nullable=True),
                     sa.Column('updated', sa.TIMESTAMP(), nullable=True),
                     sa.Column('created', sa.TIMESTAMP(), nullable=True),
-                    sa.ForeignKeyConstraint(['rasterid'],
-                                            ['rastercontrol.rasterid']),
+                    sa.ForeignKeyConstraint(['rasterid'], ['raster.rasterid']),
                     sa.PrimaryKeyConstraint('rasterid', 'rvolid'),
                     sa.UniqueConstraint('rvolid'))
 

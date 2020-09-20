@@ -273,7 +273,7 @@ class JournalsRaster(Base):
 
 
 class JournalsRasterHistory(Base):
-    __tablename__ = 'raster'
+    __tablename__ = 'raster_hist'
 
     histid = Column(Integer, primary_key=True, autoincrement=True,
                     unique=True, nullable=False)
@@ -287,8 +287,9 @@ class JournalsRasterHistory(Base):
     height = Column(Integer, nullable=True)
     embargo = Column(Integer, nullable=True)
     options = Column(String, nullable=True)
-    updated = Column(UTCDateTime, onupdate=get_date)
-    created = Column(UTCDateTime, default=get_date)
+    updated = Column(UTCDateTime)
+    created = Column(UTCDateTime)
+    superseded = Column(UTCDateTime, default=get_date)
 
     def __repr(self):
         return "raster.rasterid='{self.rasterid}'".format(self=self)
