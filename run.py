@@ -201,7 +201,7 @@ def main():
             calc_holdings(masterdict, args.calc_holdings)
 
         if args.load_raster:
-            load_raster(masterdict)
+            load_rasterconfig(masterdict)
 
 
 if __name__ == '__main__':
