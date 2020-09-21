@@ -125,61 +125,62 @@ def read_complete_csvs():
     return data
 
 
-def read_raster_xml(bibstem):
+def read_raster_xml(masterdict):
     raster_dir = config.JDB_DATA_DIR + config.RASTER_CONFIG_DIR
-    raster_file = raster_dir + bibstem + '.xml'
-    if os.path.isfile(raster_file):
-        print('lol file:', raster_file)
-        with open(raster_file, 'rU') as fx:
-            filestem = raster_file.split('/')[-1].rstrip('.xml')
-            data = fx.read().rstrip()
-            soup = bs(data, 'html5lib')
-            pub = soup.find('publication')
+    recs = []
+    for masterid, bibstem in list(masterdict.items()):
+        raster_file = raster_dir + bibstem + '.xml'
+        if os.path.isfile(raster_file):
+            print('lol file:', raster_file)
+            with open(raster_file, 'rU') as fx:
+                filestem = raster_file.split('/')[-1].rstrip('.xml')
+                data = fx.read().rstrip()
+                soup = bs(data, 'html5lib')
+                pub = soup.find('publication')
 
-            # get volume specific parameters
-            volume_specific = pub.find_all('volumes')
-            volumes = []
-            if volume_specific:
-                for v in volume_specific:
-                    vol_param = dict()
-                    vol_range = dict()
-                    for t in v.children:
-                        if t.name:
-                            try:
-                                vol_param[t.name] = t.contents[0].strip()
-                                if not vol_param[t.name]:
-                                    del vol_param[t.name]
-                            except Exception as err:
-                                pass
-                                # print(('volumening problem:', err))
-                    if vol_param:
-                        vol_range['range'] = v['range']
-                        vol_range['param'] = vol_param
-                        volumes.append(vol_range)
+                # get volume specific parameters
+                volume_specific = pub.find_all('volumes')
+                volumes = []
+                if volume_specific:
+                    for v in volume_specific:
+                        vol_param = dict()
+                        vol_range = dict()
+                        for t in v.children:
+                            if t.name:
+                                try:
+                                    vol_param[t.name] = t.contents[0].strip()
+                                    if not vol_param[t.name]:
+                                        del vol_param[t.name]
+                                except Exception as err:
+                                    pass
+                                    # print(('volumening problem:', err))
+                        if vol_param:
+                            vol_range['range'] = v['range']
+                            vol_range['param'] = vol_param
+                            volumes.append(vol_range)
 
-            # now make a dict of the general params
-            global_param = dict()
-            for t in pub.children:
-                if t.name:
-                    try:
-                        global_param[t.name] = t.contents[0].strip()
-                        if not global_param[t.name]:
-                            del global_param[t.name]
-                    except Exception as err:
-                        if t.name == 'bibstem':
-                            global_param['bibstem'] = filestem
-                        # else:
-                            # print "Error in %s: %s\t%s"%(filestem,t.name,err)
-            try:
-                if volumes:
-                    # add volume-specific params to dict as an array
-                    global_param['rastervol'] = volumes
-                return global_param
-            except Exception as err:
-                pass
+                # now make a dict of the general params
+                global_param = dict()
+                for t in pub.children:
+                    if t.name:
+                        try:
+                            global_param[t.name] = t.contents[0].strip()
+                            if not global_param[t.name]:
+                                del global_param[t.name]
+                        except Exception as err:
+                            if t.name == 'bibstem':
+                                global_param['bibstem'] = filestem
+                            # else:
+                                # print "Error in %s: %s\t%s"%(filestem,t.name,err)
+                try:
+                    if volumes:
+                        # add volume-specific params to dict as an array
+                        global_param['rastervol'] = volumes
+                except Exception as err:
+                    pass
                 # print(('ERROR:', err))
-    else:
-        return
+                recs.append(masterid,global_param)
+    return recs
 
 
 def parse_bibcodes(bibcode):

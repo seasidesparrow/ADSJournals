@@ -74,14 +74,11 @@ def load_rasterconfig(masterdict):
     '''
     No.
     '''
-    recsr = []
-    for key, value in list(masterdict.items()):
-        raster_rec = utils.read_raster_xml(key)
-        if raster_rec:
-            recsr.append((value,raster_rec))
-        # if raster_rec:
-            # print(("LOL! %s", raster_rec))
-    if recsr:
+    try:
+        recsr = utils.read_raster_xml(masterdict)
+    except Exception as e:
+        print('error in utils.read_raster_xml:',e)
+    else:
         # LOGGER.debug("Inserting %s raster config records", len(recsr))
         print('lol %s recs' % len(recsr))
         # try:
