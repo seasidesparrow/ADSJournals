@@ -128,7 +128,7 @@ def read_complete_csvs():
 def read_raster_xml(masterdict):
     raster_dir = config.JDB_DATA_DIR + config.RASTER_CONFIG_DIR
     recs = []
-    for masterid, bibstem in list(masterdict.items()):
+    for bibstem, masterid in list(masterdict.items()):
         raster_file = raster_dir + bibstem + '.xml'
         if os.path.isfile(raster_file):
             print('lol file:', raster_file)
@@ -179,7 +179,7 @@ def read_raster_xml(masterdict):
                 except Exception as err:
                     pass
                 # print(('ERROR:', err))
-                recs.append(masterid,global_param)
+                recs.append((masterid,global_param))
     return recs
 
 
