@@ -161,7 +161,7 @@ def task_db_load_raster(recs):
                 else:
                     embargo = ''
                 if 'options' in r[1]:
-                    options = r[1]['options']
+                    options = 'oops'
                 else:
                     options = ''
                     
