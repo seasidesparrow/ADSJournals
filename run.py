@@ -75,18 +75,18 @@ def load_rasterconfig(masterdict):
     No.
     '''
     recsr = []
-    for key, value in list(masterdict.items()):
+    for key, value in list(masterdict.items())[0:50]:
         raster_rec = utils.read_raster_xml(key)
         recsr.append((value,raster_rec))
         # if raster_rec:
             # print(("LOL! %s", raster_rec))
     if recsr:
-        LOGGER.debug("Inserting %s raster config records", len(recsr))
-        print('lol %s recs', len(recsr))
-        try:
-            tasks.task_db_load_raster(recsr)
-        except Exception as err:
-            LOGGER.error("Could not load raster config: %s", err)
+        # LOGGER.debug("Inserting %s raster config records", len(recsr))
+        print('lol %s recs' % len(recsr))
+        # try:
+        tasks.task_db_load_raster(recsr)
+        # except Exception as err:
+        #     LOGGER.error("Could not load raster config: %s", err)
     return
 
 
