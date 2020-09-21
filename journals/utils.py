@@ -129,8 +129,8 @@ def read_raster_xml(bibstem):
     raster_dir = config.JDB_DATA_DIR + config.RASTER_CONFIG_DIR
     raster_file = raster_dir + bibstem + '.xml'
     if os.path.isfile(raster_file):
-        with open(xf, 'rU') as fx:
-            filestem = xf.split('/')[-1].rstrip('.xml')
+        with open(raster_file, 'rU') as fx:
+            filestem = raster_file.split('/')[-1].rstrip('.xml')
             data = fx.read().rstrip()
             soup = bs(data, 'html5lib')
             pub = soup.find('publication')
