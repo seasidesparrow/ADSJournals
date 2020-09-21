@@ -137,8 +137,8 @@ def read_raster_xml(bibstem):
 
             # get volume specific parameters
             volume_specific = pub.find_all('volumes')
+            volumes = []
             if volume_specific:
-                volumes = []
                 for v in volume_specific:
                     vol_param = dict()
                     vol_range = dict()

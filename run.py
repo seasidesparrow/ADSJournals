@@ -75,9 +75,9 @@ def load_rasterconfig(masterdict):
     No.
     '''
     recsr = []
-    for key in list(masterdict.keys()):
+    for key, value in list(masterdict.items()):
         raster_rec = utils.read_raster_xml(key)
-        recsr.append(raster_rec)
+        recsr.append((value,raster_rec))
         # if raster_rec:
             # print(("LOL! %s", raster_rec))
     if recsr:

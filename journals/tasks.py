@@ -128,6 +128,67 @@ def task_db_load_publisher(recs):
 
 
 @app.task(queue='load-datafiles')
+def task_db_load_raster(recs):
+    with app.session_scope() as session:
+        if recs:
+            for r in recs:
+                print("lol.")
+                if 'label' in r[1]:
+                    copyrt_file = r[1]['label']
+                else:
+                    copyrt_file = ''
+                if 'pubtype' in r[1]:
+                    pubtype = r[1]
+                else:
+                    pubtype = ''
+                if 'bibstem' in r[1]:
+                    bibstem = r[1]['bibstem']
+                else:
+                    bibstem = ''
+                if 'abbrev' in r[1]:
+                    abbrev = r[1]['abbrev']
+                else:
+                    abbrev = ''
+                if 'width' in r[1]:
+                    width = r[1]['width']
+                else:
+                    width = '' 
+                if 'height' in r[1]:
+                    height = r[1]['height']
+                else:
+                    height = ''
+                if 'embargo' in r[1]:
+                    embargo = r[1]['embargo']
+                else:
+                    embargo = ''
+                if 'options' in r[1]:
+                    options = r[1]['options']
+                else:
+                    options = ''
+                    
+                try:
+                    session.add(JournalsRaster(masterid=r[0],
+                                               copyrt_file=copyrt_file,
+                                               pubtype=pubtype,
+                                               bibstem=bibstem,
+                                               abbrev=abbrev,
+                                               width=width,
+                                               height=height,
+                                               embargo=embargo,
+                                               options=options))
+                    beew = session.commit()
+                    print("beeeeeeew! %s", beew)
+                except Exception as e:
+                    logger.warn("Cant load raster data for: %s,%s" %
+                                (r[0], bibstem))
+                    session.rollback()
+                    session.flush()
+        else:
+            logger.info("There were no XREF IDs to load!")
+
+
+
+@app.task(queue='load-datafiles')
 def task_db_get_bibstem_masterid():
     dictionary = {}
     with app.session_scope() as session:
