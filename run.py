@@ -130,7 +130,7 @@ def load_completeness(masterdict):
                 d = value['startvol']
                 e = value['endvol']
                 f = value['complete']
-                g = value['complete_origin']
+                g = value['comporig']
                 i = value['scanned']
                 j = value['online']
                 if value['issn'] != '':
