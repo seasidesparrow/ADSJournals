@@ -132,7 +132,6 @@ def task_db_load_raster(recs):
     with app.session_scope() as session:
         if recs:
             for r in recs:
-                print("lol.")
                 if 'label' in r[1]:
                     copyrt_file = r[1]['label']
                 else:
