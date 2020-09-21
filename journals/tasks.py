@@ -178,8 +178,8 @@ def task_db_load_raster(recs):
                     beew = session.commit()
                     print("beeeeeeew! %s", beew)
                 except Exception as e:
-                    logger.warn("Cant load raster data for: %s,%s" %
-                                (r[0], bibstem))
+                    logger.warn("Cant load raster data for (%s, %s): %s" %
+                                (r[0], bibstem, e))
                     session.rollback()
                     session.flush()
         else:
