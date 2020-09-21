@@ -137,7 +137,7 @@ def task_db_load_raster(recs):
                 else:
                     copyrt_file = ''
                 if 'pubtype' in r[1]:
-                    pubtype = r[1]
+                    pubtype = r[1]['pubtype']
                 else:
                     pubtype = ''
                 if 'bibstem' in r[1]:
