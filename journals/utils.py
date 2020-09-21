@@ -149,9 +149,9 @@ def read_raster_xml(bibstem):
                                 if not vol_param[t.name]:
                                     del vol_param[t.name]
                             except Exception as err:
-                                print(("volumening problem:", err))
+                                print(('volumening problem:', err))
                     if vol_param:
-                        vol_range['range'] = v["range"]
+                        vol_range['range'] = v['range']
                         vol_range['param'] = vol_param
                         volumes.append(vol_range)
 

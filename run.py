@@ -200,6 +200,9 @@ def main():
             # holdings: be aware this is a big Solr query
             calc_holdings(masterdict, args.calc_holdings)
 
+        if args.load_raster:
+            load_raster(masterdict)
+
 
 if __name__ == '__main__':
     main()
