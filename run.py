@@ -82,6 +82,7 @@ def load_rasterconfig(masterdict):
             # print(("LOL! %s", raster_rec))
     if recsr:
         LOGGER.debug("Inserting %s raster config records", len(recsr))
+        print('lol %s recs', len(recsr))
         try:
             tasks.task_db_load_raster(recsr)
         except Exception as err:

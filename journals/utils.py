@@ -129,6 +129,7 @@ def read_raster_xml(bibstem):
     raster_dir = config.JDB_DATA_DIR + config.RASTER_CONFIG_DIR
     raster_file = raster_dir + bibstem + '.xml'
     if os.path.isfile(raster_file):
+        print 'lol file:', raster_file
         with open(raster_file, 'rU') as fx:
             filestem = raster_file.split('/')[-1].rstrip('.xml')
             data = fx.read().rstrip()
