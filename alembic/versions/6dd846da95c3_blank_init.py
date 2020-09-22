@@ -1,7 +1,7 @@
 """Blank init
 
 Revision ID: 6dd846da95c3
-Revises: 
+Revises:
 Create Date: 2019-10-03 13:17:50.925566
 
 """

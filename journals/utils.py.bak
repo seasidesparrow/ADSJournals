@@ -1,4 +1,3 @@
-from __future__ import print_function
 from bs4 import BeautifulSoup as bs
 import config
 from namedentities import named_entities, unicode_entities
@@ -17,13 +16,13 @@ def normalize(instring):
     # input from whatever, output to unicode
     try:
         work_string = instring.decode('utf-8')
-    except Exception as err:
+    except Exception, err:
         try:
             work_string = instring.decode('iso-8859-1')
-        except Exception as err:
+        except Exception, err:
             try:
                 work_string = instring.decode('cp1252-1')
-            except Exception as err:
+            except Exception, err:
                 return unicode_entities(instring)
     return unicode_entities(work_string)
 
@@ -42,7 +41,7 @@ def read_bibstems_list():
                     #             .format(bibstem))
                     pass
                 data[bibstem] = {'type': bstype, 'pubname': bspubname}
-    except Exception as err:
+    except Exception, err:
         raise ReadBibstemException(err)
     return data
 
@@ -75,7 +74,7 @@ def read_canonical_list():
             for l in f.readlines():
                 (bibcode, a, b, c) = l.rstrip().split('\t')
                 bibc.append(bibcode)
-    except Exception as err:
+    except Exception, err:
         raise ReadCanonicalException(err)
     return bibc
 
@@ -93,7 +92,7 @@ def read_complete_csvs():
                         (journal, bibstem, issn, xref, startyear, startvol,
                          endvol, complete, complete_origin, publisher, scanned,
                          online, url, notes) = l.strip().split('|')
-                    except Exception as err:
+                    except Exception, err:
                         # logger.warn("Unparseable csv: {0}".format(l.strip()))
                         pass
                     else:
@@ -119,68 +118,64 @@ def read_complete_csvs():
                                              u'online': online,
                                              u'url': url,
                                              u'notes': notes}
-        except Exception as err:
+        except Exception, err:
             # logger.warn('Cant load collection {0}:'.format(coll))
             pass
     return data
 
 
-def read_raster_xml(masterdict):
+def read_raster_xml(bibstem):
     raster_dir = config.JDB_DATA_DIR + config.RASTER_CONFIG_DIR
-    recs = []
-    for bibstem, masterid in list(masterdict.items()):
-        raster_file = raster_dir + bibstem + '.xml'
-        if os.path.isfile(raster_file):
-            print('lol file:', raster_file)
-            with open(raster_file, 'rU') as fx:
-                filestem = raster_file.split('/')[-1].rstrip('.xml')
-                data = fx.read().rstrip()
-                soup = bs(data, 'html5lib')
-                pub = soup.find('publication')
+    raster_file = raster_dir + bibstem + '.xml'
+    if os.path.isfile(raster_file):
+        with open(xf, 'rU') as fx:
+            filestem = xf.split('/')[-1].rstrip('.xml')
+            data = fx.read().rstrip()
+            soup = bs(data, 'html5lib')
+            pub = soup.find('publication')
 
-                # get volume specific parameters
-                volume_specific = pub.find_all('volumes')
+            # get volume specific parameters
+            volume_specific = pub.find_all('volumes')
+            if volume_specific:
                 volumes = []
-                if volume_specific:
-                    for v in volume_specific:
-                        vol_param = dict()
-                        vol_range = dict()
-                        for t in v.children:
-                            if t.name:
-                                try:
-                                    vol_param[t.name] = t.contents[0].strip()
-                                    if not vol_param[t.name]:
-                                        del vol_param[t.name]
-                                except Exception as err:
-                                    pass
-                                    # print(('volumening problem:', err))
-                        if vol_param:
-                            vol_range['range'] = v['range']
-                            vol_range['param'] = vol_param
-                            volumes.append(vol_range)
+                for v in volume_specific:
+                    vol_param = dict()
+                    vol_range = dict()
+                    for t in v.children:
+                        if t.name:
+                            try:
+                                vol_param[t.name] = t.contents[0].strip()
+                                if not vol_param[t.name]:
+                                    del vol_param[t.name]
+                            except Exception as err:
+                                print("volumening problem:", err)
+                    if vol_param:
+                        vol_range['range'] = v["range"]
+                        vol_range['param'] = vol_param
+                        volumes.append(vol_range)
 
-                # now make a dict of the general params
-                global_param = dict()
-                for t in pub.children:
-                    if t.name:
-                        try:
-                            global_param[t.name] = t.contents[0].strip()
-                            if not global_param[t.name]:
-                                del global_param[t.name]
-                        except Exception as err:
-                            if t.name == 'bibstem':
-                                global_param['bibstem'] = filestem
-                            # else:
-                                # print "Error in %s: %s\t%s"%(filestem,t.name,err)
-                try:
-                    if volumes:
-                        # add volume-specific params to dict as an array
-                        global_param['rastervol'] = volumes
-                except Exception as err:
-                    pass
-                # print(('ERROR:', err))
-                recs.append((masterid,global_param))
-    return recs
+            # now make a dict of the general params
+            global_param = dict()
+            for t in pub.children:
+                if t.name:
+                    try:
+                        global_param[t.name] = t.contents[0].strip()
+                        if not global_param[t.name]:
+                            del global_param[t.name]
+                    except Exception, err:
+                        if t.name == 'bibstem':
+                            global_param['bibstem'] = filestem
+                        # else:
+                            # print "Error in %s: %s\t%s"%(filestem,t.name,err)
+            try:
+                if volumes:
+                    # add volume-specific params to dict as an array
+                    global_param['rastervol'] = volumes
+                return global_param
+            except Exception, err:
+                print('ERROR:', err)
+    else:
+        return
 
 
 def parse_bibcodes(bibcode):
@@ -198,7 +193,7 @@ def parse_bibcodes(bibcode):
             parsed_bib = {"bibcode": bibcode, "year": year, "bibstem": stem,
                           "volume": volm, "qualifier": qual, "page": page,
                           "initial": auth}
-        except Exception as err:
+        except Exception, err:
             # logger.warn("Nonstandard bibcode: {0}".format(bibcode))
             pass
     return parsed_bib

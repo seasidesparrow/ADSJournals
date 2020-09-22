@@ -57,7 +57,7 @@ def load_master_table():
     '''
     bibstems = utils.read_bibstems_list()
     recs = []
-    for key, value in list(bibstems.items()):
+    for key, value in bibstems.items():
         bibstem = key
         pubtype = value['type']
         journal_name = value['pubname']
@@ -74,17 +74,12 @@ def load_rasterconfig(masterdict):
     '''
     No.
     '''
-    try:
-        recsr = utils.read_raster_xml(masterdict)
-    except Exception as e:
-        print('error in utils.read_raster_xml:',e)
-    else:
-        # LOGGER.debug("Inserting %s raster config records", len(recsr))
-        print('lol %s recs' % len(recsr))
-        # try:
-        tasks.task_db_load_raster(recsr)
-        # except Exception as err:
-        #     LOGGER.error("Could not load raster config: %s", err)
+    recsr = []
+    recsrv = []
+    for key in masterdict.keys():
+        raster_rec = utils.read_raster_xml(key)
+        if raster_rec:
+            print(("LOL! %s", raster_rec))
     return
 
 
@@ -94,7 +89,7 @@ def load_abbreviations(masterdict):
     '''
     abbrevs = utils.read_abbreviations_list()
     recs = []
-    for key, value in list(abbrevs.items()):
+    for key, value in abbrevs.items():
         try:
             if key in masterdict:
                 LOGGER.debug("Got masterid for bibstem %s", key)
@@ -126,7 +121,7 @@ def load_completeness(masterdict):
     recsi = []
     recsx = []
     recsp = []
-    for key, value in list(pub_dict.items()):
+    for key, value in pub_dict.items():
         try:
             if key in masterdict:
                 LOGGER.debug("Got masterid for bibstem %s", key)
@@ -135,7 +130,7 @@ def load_completeness(masterdict):
                 d = value['startvol']
                 e = value['endvol']
                 f = value['complete']
-                g = value['comporig']
+                g = value['complete_origin']
                 i = value['scanned']
                 j = value['online']
                 if value['issn'] != '':
@@ -204,9 +199,6 @@ def main():
         if args.calc_holdings:
             # holdings: be aware this is a big Solr query
             calc_holdings(masterdict, args.calc_holdings)
-
-        if args.load_raster:
-            load_rasterconfig(masterdict)
 
 
 if __name__ == '__main__':

@@ -1,5 +1,8 @@
 adsputils==1.0.12
 alembic==1.0.0
+bs4==0.0.1
+future==0.18.2
+html5lib==1.1
 namedentities==1.9.4
 psycopg2-binary==2.7.5
 requests==2.23.0

@@ -1,8 +1,8 @@
 from adsputils import get_date, UTCDateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import (Table, Column, Integer, Numeric, String, TIMESTAMP,
-                        ForeignKey, Boolean, Float, UniqueConstraint)
-from sqlalchemy.dialects.postgresql import JSONB, ENUM
+                        ForeignKey, Boolean, Float, Text, UniqueConstraint)
+from sqlalchemy.dialects.postgresql import ENUM
 
 Base = declarative_base()
 
@@ -18,8 +18,8 @@ class JournalsMaster(Base):
     bibstem = Column(String, unique=True, nullable=False)
     journal_name = Column(String, nullable=False)
     primary_language = Column(String)
-    multilingual = Column(Boolean)
-    defunct = Column(Boolean, nullable=False, default=False)
+    multilingual = Column(Boolean, default=False)
+    defunct = Column(Boolean, default=False)
     updated = Column(UTCDateTime, onupdate=get_date)
     created = Column(UTCDateTime, default=get_date)
 
@@ -29,10 +29,12 @@ class JournalsMaster(Base):
     def __repr__(self):
         return "master.masterid='{self.masterid}'".format(self=self)
 
+
 class JournalsMasterHistory(Base):
     __tablename__ = 'master_hist'
 
-    histid = Column(Integer, primary_key=True, unique=True)
+    histid = Column(Integer, primary_key=True, autoincrement=True,
+                    unique=True, nullable=False)
     masterid = Column(Integer)
     bibstem = Column(String)
     journal_name = Column(String)
@@ -54,7 +56,7 @@ class JournalsNames(Base):
     __tablename__ = 'names'
 
     nameid = Column(Integer, primary_key=True, autoincrement=True,
-                     unique=True, nullable=False)
+                    unique=True, nullable=False)
     masterid = Column(Integer, ForeignKey('master.masterid'),
                       primary_key=True, nullable=False)
     name_english_translated = Column(String)
@@ -71,7 +73,8 @@ class JournalsNames(Base):
 class JournalsNamesHistory(Base):
     __tablename__ = 'names_hist'
 
-    histid = Column(Integer, primary_key=True, unique=True)
+    histid = Column(Integer, primary_key=True, autoincrement=True,
+                    unique=True, nullable=False)
     nameid = Column(Integer)
     masterid = Column(Integer)
     name_english_translated = Column(String)
@@ -84,40 +87,6 @@ class JournalsNamesHistory(Base):
 
     def __repr__(self):
         return "names_hist.masterid='{self.masterid}'".format(self=self)
-
-
-class JournalsIdentifiers(Base):
-    __tablename__ = 'idents'
-
-    identid = Column(Integer, primary_key=True, autoincrement=True,
-                     unique=True, nullable=False)
-    masterid = Column(Integer, ForeignKey('master.masterid'),
-                      primary_key=True, nullable=False)
-    id_type = Column(String)
-    id_value = Column(String)
-    updated = Column(UTCDateTime, onupdate=get_date)
-    created = Column(UTCDateTime, default=get_date)
-    id_combo = UniqueConstraint('id_type', 'id_value', name='identkey')
-
-    def __repr__(self):
-        return "idents.identid='{self.identid}'".format(self=self)
-
-
-class JournalsIdentifiersHistory(Base):
-    __tablename__ = 'idents_hist'
-
-    histid = Column(Integer, primary_key=True, unique=True)
-    identid = Column(Integer)
-    masterid = Column(Integer)
-    id_type = Column(String)
-    id_value = Column(String)
-    updated = Column(UTCDateTime)
-    created = Column(UTCDateTime)
-    id_combo = UniqueConstraint('id_type', 'id_value', name='identkey')
-    superseded = Column(UTCDateTime, default=get_date)
-
-    def __repr__(self):
-        return "idents_histidentid='{self.identid}')".format(self=self)
 
 
 class JournalsAbbreviations(Base):
@@ -138,7 +107,8 @@ class JournalsAbbreviations(Base):
 class JournalsAbbreviationsHistory(Base):
     __tablename__ = 'abbrevs_hist'
 
-    histid = Column(Integer, primary_key=True, unique=True)
+    histid = Column(Integer, primary_key=True, autoincrement=True,
+                    unique=True, nullable=False)
     abbrevid = Column(Integer)
     masterid = Column(Integer)
     abbreviation = Column(String)
@@ -150,6 +120,39 @@ class JournalsAbbreviationsHistory(Base):
         return "abbrevs.abbrevid='{self.abbrevid}'".format(self=self)
 
 
+class JournalsIdentifiers(Base):
+    __tablename__ = 'idents'
+
+    identid = Column(Integer, primary_key=True, autoincrement=True,
+                     unique=True, nullable=False)
+    masterid = Column(Integer, ForeignKey('master.masterid'),
+                      primary_key=True, nullable=False)
+    id_type = Column(String)
+    id_value = Column(String)
+    updated = Column(UTCDateTime, onupdate=get_date)
+    created = Column(UTCDateTime, default=get_date)
+
+    def __repr__(self):
+        return "idents.identid='{self.identid}'".format(self=self)
+
+
+class JournalsIdentifiersHistory(Base):
+    __tablename__ = 'idents_hist'
+
+    histid = Column(Integer, primary_key=True, autoincrement=True,
+                    unique=True, nullable=False)
+    identid = Column(Integer)
+    masterid = Column(Integer)
+    id_type = Column(String)
+    id_value = Column(String)
+    updated = Column(UTCDateTime)
+    created = Column(UTCDateTime)
+    superseded = Column(UTCDateTime, default=get_date)
+
+    def __repr__(self):
+        return "idents_histidentid='{self.identid}')".format(self=self)
+
+
 class JournalsPublisher(Base):
     __tablename__ = 'publisher'
 
@@ -159,8 +162,10 @@ class JournalsPublisher(Base):
                       primary_key=True, nullable=False)
     pubname = Column(String)
     pubaddress = Column(String)
-    pubcontact = Column(JSONB, server_default="'{}'")
+    pubcontact = Column(Text)
     puburl = Column(String)
+    year_start = Column(Integer)
+    year_end = Column(Integer)
     updated = Column(UTCDateTime, onupdate=get_date)
     created = Column(UTCDateTime, default=get_date)
 
@@ -176,24 +181,28 @@ class JournalsPublisherHistory(Base):
     masterid = Column(Integer)
     pubname = Column(String)
     pubaddress = Column(String)
-    pubcontact = Column(JSONB)
+    pubcontact = Column(Text)
     puburl = Column(String)
+    year_start = Column(Integer)
+    year_end = Column(Integer)
     updated = Column(UTCDateTime, onupdate=get_date)
     created = Column(UTCDateTime, default=get_date)
 
     def __repr__(self):
-        return "publisher_hist.publisherid='{self.publisherid}'".format(self=self)
+        return "publisher_hist.publisherid='{self.publisherid}'"\
+               .format(self=self)
 
 
-class JournalsPubHist(Base):
-    __tablename__ = 'pubhist'
+class JournalsStatus(Base):
+    __tablename__ = 'status'
 
-    pubhistid = Column(Integer, primary_key=True, autoincrement=True,
+    statusid = Column(Integer, primary_key=True, autoincrement=True,
                        unique=True, nullable=False)
     masterid = Column(Integer, ForeignKey('master.masterid'),
                       primary_key=True, nullable=False)
     year_start = Column(Integer)
     year_end = Column(Integer)
+    complete = Column(String)
     predecessor_id = Column(Integer, ForeignKey('publisher.publisherid'))
     successor_id = Column(Integer, ForeignKey('publisher.publisherid'))
     orgid = Column(String)
@@ -205,11 +214,12 @@ class JournalsPubHist(Base):
         return "pubhist.pubhistid='{self.pubhistid}'".format(self=self)
 
 
-class JournalsPubHistHistory(Base):
-    __tablename__ = 'pubhist_hist'
+class JournalsStatusHistory(Base):
+    __tablename__ = 'status_hist'
 
-    histid = Column(Integer, primary_key=True, unique=True)
-    pubhistid = Column(Integer)
+    histid = Column(Integer, primary_key=True, autoincrement=True,
+                    unique=True, nullable=False)
+    statusid = Column(Integer)
     masterid = Column(Integer)
     year_start = Column(Integer)
     year_end = Column(Integer)
@@ -232,7 +242,7 @@ class JournalsHoldings(Base):
                         unique=True, nullable=False)
     masterid = Column(Integer, ForeignKey('master.masterid'),
                       primary_key=True, nullable=False)
-    volumes_list = Column(JSONB, server_default="'{}'")
+    volumes_list = Column(Text)
     complete = Column(Boolean, default=False)
     updated = Column(UTCDateTime, onupdate=get_date)
     created = Column(UTCDateTime, default=get_date)
@@ -241,32 +251,10 @@ class JournalsHoldings(Base):
         return "holdings.holdingsid='{self.holdingsid}'".format(self=self)
 
 
-class JournalsStatistics(Base):
-    __tablename__ = 'statistics'
-
-# placeholder for the concept of a stats table for journal-level tracking
-# information separate from our Holdings table (e.g. journal reads, ADS pdf
-# reads, etc)
-
-    pubhistid = Column(Integer, ForeignKey('pubhist.pubhistid'),
-                       primary_key=True, nullable=False)
-    statsid = Column(Integer, primary_key=True, autoincrement=True,
-                     unique=True, nullable=False)
-    statistics = Column(JSONB, server_default="'{}'")
-    updated = Column(UTCDateTime, onupdate=get_date)
-    created = Column(UTCDateTime, default=get_date)
-
-    def __repr(self):
-        return "statistics.statsid='{self.statsid}'".format(self=self)
-
-
 class JournalsRaster(Base):
     __tablename__ = 'raster'
 
-# placeholder for the concept of a table with information controlling
-# rasterizing information (e.g. the information in .../articles/config/ABC.xml)
-
-    pubhistid = Column(Integer, ForeignKey('pubhist.pubhistid'),
+    masterid = Column(Integer, ForeignKey('master.masterid'),
                        primary_key=True, nullable=False)
     rasterid = Column(Integer, primary_key=True, autoincrement=True,
                       unique=True, nullable=False)
@@ -274,12 +262,35 @@ class JournalsRaster(Base):
     pubtype = Column(String, nullable=True)
     bibstem = Column(String, nullable=True)
     abbrev = Column(String, nullable=True)
-    width = Column(Integer, nullable=True)
-    height = Column(Integer, nullable=True)
-    embargo = Column(Integer, nullable=True)
+    width = Column(String, nullable=True)
+    height = Column(String, nullable=True)
+    embargo = Column(String, nullable=True)
     options = Column(String, nullable=True)
     updated = Column(UTCDateTime, onupdate=get_date)
     created = Column(UTCDateTime, default=get_date)
+
+    def __repr(self):
+        return "raster.rasterid='{self.rasterid}'".format(self=self)
+
+
+class JournalsRasterHistory(Base):
+    __tablename__ = 'raster_hist'
+
+    histid = Column(Integer, primary_key=True, autoincrement=True,
+                    unique=True, nullable=False)
+    masterid = Column(Integer, nullable=False)
+    rasterid = Column(Integer, nullable=False)
+    copyrt_file = Column(String, nullable=True)
+    pubtype = Column(String, nullable=True)
+    bibstem = Column(String, nullable=True)
+    abbrev = Column(String, nullable=True)
+    width = Column(String, nullable=True)
+    height = Column(String, nullable=True)
+    embargo = Column(String, nullable=True)
+    options = Column(String, nullable=True)
+    updated = Column(UTCDateTime)
+    created = Column(UTCDateTime)
+    superseded = Column(UTCDateTime, default=get_date)
 
     def __repr(self):
         return "raster.rasterid='{self.rasterid}'".format(self=self)
@@ -289,10 +300,10 @@ class JournalsRasterVolume(Base):
     __tablename__ = 'rastervolume'
     rasterid = Column(Integer, ForeignKey('raster.rasterid'),
                       primary_key=True, nullable=False)
-    rvolid = Column(Integer, primary_key = True, autoincrement=True,
+    rvolid = Column(Integer, primary_key=True, autoincrement=True,
                     unique=True, nullable=False)
     volume_number = Column(String, nullable=False)
-    volume_properties = Column(JSONB, server_default="'{}'")
+    volume_properties = Column(Text)
     updated = Column(UTCDateTime, onupdate=get_date)
     created = Column(UTCDateTime, default=get_date)
 
@@ -304,10 +315,10 @@ class JournalsRefSource(Base):
     __tablename__ = 'refsource'
 
     refsourceid = Column(Integer, primary_key=True, autoincrement=True,
-                        unique=True, nullable=False)
+                         unique=True, nullable=False)
     masterid = Column(Integer, ForeignKey('master.masterid'),
                       primary_key=True, nullable=False)
-    refsource_list = Column(JSONB, server_default="'{}'")
+    refsource_list = Column(Text)
     updated = Column(UTCDateTime, onupdate=get_date)
     created = Column(UTCDateTime, default=get_date)
 
